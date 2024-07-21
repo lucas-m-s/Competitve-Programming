@@ -1,2 +1,2 @@
 # Competitve-Programming
-Códigos para uso em programação competitiva
+Códigos para uso em programação competitiva.
