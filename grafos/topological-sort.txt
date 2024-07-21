@@ -1,0 +1,20 @@
+//O(V+E)
+int n;//n=|V|
+vector<vector<int>> list_adj;
+vector<bool> vis;
+
+void dfs(int u, vector<int> &order)
+{
+	vis[u] = 1;
+	for(int v : list_adj[u])
+		if(!vis[v]) dfs(v);
+	order.push_back(u);
+}
+
+vector<int> topsort(int s)
+{
+	vector<int> order;
+	dfs(s, order);
+	reverse(order.begin(), order.end());
+	return order;
+}

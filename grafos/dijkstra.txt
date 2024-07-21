@@ -1,0 +1,25 @@
+//O(V^2+E)
+int n, m;//n=|V|, m=|E|
+vector<vector<pair<int,int>>> list_adj;
+vector<bool> vis;
+
+vector<int> dijkstra(int s)
+{
+    vector<int> dist(n, INF);//0-based indexing
+    priority_queue<pair<int,int>> pq;
+    dist[s] = 0; //s é o vértice de ínicio
+    pq.push({0,s});
+    while(!pq.empty()){
+        int x = pq.top().second;
+        pq.pop();
+        if(vis[x]) continue;
+        vis[x] = 1;
+        for(auto y : list_adj[x]){
+            if(dist[y.second] > dist[x]+y.first){
+                dist[y.second] = dist[x]+y.first;
+                pq.push({-dist[y.second],y.second});
+            }
+        }
+    }
+    return dist;
+}

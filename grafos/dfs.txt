@@ -1,0 +1,11 @@
+//O(V+E)
+int n;//n=|V|
+vector<vector<int>> list_adj;
+vector<bool> vis;
+
+void dfs(int u)
+{
+    vis[u] = 1;
+    for(int v : list_adj[u])
+        if(!vis[v]) dfs(v);
+}

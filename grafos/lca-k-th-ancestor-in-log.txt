@@ -1,0 +1,40 @@
+//....
+//query - O( log N )
+int root;
+void dfs(int u, int p) {
+  tin[u] = ++timer;
+
+  if(u == root) up[u][0] = -1;
+  else up[u][0] = p;
+  
+  for(int i = 1; i <= LOG; ++i) {
+    const int v = up[u][i-1];
+    if(v == -1) up[u][i] = -1;
+    else up[u][i] = up[v][i-1]; //2^n = 2 * 2^(n-1)
+  }
+  
+  for(int v : ns[u]) {
+    if(v == p) continue;
+    dfs(v, u);
+  }
+
+  tout[u] = ++timer;
+}
+//.....
+
+signed main() {
+  //....
+  root = 1, preplca(); //caso o root seja 1
+  while(m--) {
+    int u, k; cin>>u>>k;
+    int ok = 1;
+    for(int i = LOG; i >= 0; --i) {
+      if(k >= (1<<i)) {
+        k -= 1<<i;
+        u = up[u][i];
+        if(u == -1) break;
+      }
+    }
+    cout<<u<<'\n'; //-1 se não tiver
+  }
+}

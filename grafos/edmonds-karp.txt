@@ -1,0 +1,54 @@
+//O(V*E^2) ~= O(V^5)
+int n;//n=|V|, V é 0-based indexing
+vector<vector<int>> list_adj;
+vector<vector<int>> capacity;//matriz de cap. residual
+/*inicialização de capacity:
+aresta direta: capacity[u][v]=capacidade_total
+aresta reversa: capacity[v][u]=0*/
+
+//encontra um path de s-t e retorna o maior flow que pode passar
+int path(int s, int t, vector<int> &parent)
+{
+    fill(parent.begin(), parent.end(), -1);
+    queue<pair<int,int>> q;//{u,flow}
+    q.push({s, INF});
+    parent[s] = s;
+
+    while(!q.empty()) {
+        auto [u, flow] = q.front();
+        q.pop();
+        
+        for(int v : list_adj[u]) {
+            if(parent[v] == -1 and capacity[u][v] > 0) {
+                parent[v] = u;
+                //menor flow no path de s-v
+                int min_flow = min(flow, capacity[u][v]);
+                if(v == t) return min_flow;
+                q.push({v, min_flow});
+            }
+        }
+    }
+
+    return 0;
+}
+
+//máximo fluxo de s a t
+int maxflow(int s, int t)
+{
+    int flow = 0, add_flow;
+    vector<int> parent(n);
+
+    while((add_flow = path(s, t, parent)) > 0) {
+        flow += add_flow;
+        int v = t;
+        int u = parent[v];
+        while(u != v) {
+            capacity[u][v] -= add_flow;
+            capacity[v][u] += add_flow;
+            v = u;
+            u = parent[v];
+        }
+    }
+
+    return flow;
+}

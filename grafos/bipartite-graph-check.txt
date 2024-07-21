@@ -1,0 +1,22 @@
+///O(V + E)
+//confira: Grafo eh conexo? Contem self-edge?
+int bip(int s) {
+  assert(cor[s] == -1);
+
+  queue<int> q;
+  cor[s] = 0;
+  q.emplace(s);
+  int ok = 1;
+  while(q.size()) {
+    const int u = q.front(); q.pop();
+    for(int v : ns[u]) {
+      if(cor[v] == -1) {
+        cor[v] = cor[u]^1;
+        q.emplace(v);
+      } else if(cor[v] == cor[u]) {
+        ok = 0;
+      }
+    }
+  }
+  return ok;
+}

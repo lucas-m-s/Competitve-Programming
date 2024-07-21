@@ -1,0 +1,19 @@
+//O(V+E)
+void bfs(int s, int n, vector<vector<int>> &list_adj)
+{
+    vector<bool> vis(n, 0);//0-based indexing
+    queue<int> q;
+
+    q.push(s);
+    vis[s] = 1;
+    while(!q.empty()) {
+        int u = q.front();
+        q.pop();
+        for(int v : list_adj[u]) {
+            if(!vis[v]) {
+                vis[v] = 1;
+                q.push(v);
+            }
+        }
+    }
+}

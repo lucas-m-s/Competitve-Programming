@@ -1,0 +1,21 @@
+//O(V^3)
+int n;//n=|V|
+
+vector<vector<int>> floydwarshall()
+{
+    //matriz de distâncias
+    vector<vector<int>> dist;
+    /*inicialização de dist:
+    distância para o próprio vértice é 0,
+    distância entre dois vértices conectados
+    é seu peso, qualquer outro caso distância é INF*/
+    for(int k = 0; k < n; k++){
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < n; j++){
+                if(dist[i][k] != INF and dist[k][j] != INF)
+                    dist[i][j] = min(dist[i][j], dist[i][k]+dist[k][j]);
+            }
+        }
+    }
+    return dist;
+}

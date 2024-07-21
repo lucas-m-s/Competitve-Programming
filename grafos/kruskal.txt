@@ -1,0 +1,41 @@
+//O(E*log(V))
+struct edge {
+    int u, v, peso;
+    bool operator<(edge const& e) {
+        return peso < e.peso;
+    }
+};
+int n, m;//n=|V|, m=|E|
+vector<edge> arestas;
+vector<int> pai, size;
+
+int find(int x)
+{
+    while(x != pai[x]) x = pai[x];
+    return x;
+}
+
+void uniao(int x, int y)
+{
+    int px = find(x);
+    int py = find(y);
+    if(size[px] < size[py]) swap(px,py);
+    pai[py] = px;
+    size[px] += size[py];
+}
+
+vector<edge> kruskal()
+{
+    iota(pai.begin(), pai.end(), 0);//0-based indexing
+    sort(arestas.begin(), arestas.end());
+    vector<edge> mst;
+
+    for(int i = 0; i < m; i++){
+        if(find(arestas[i].u) != find(arestas[i].v)){
+            uniao(arestas[i].u, arestas[i].v);
+            mst.push_back(arestas[i]);
+        }
+    }
+
+    return mst;
+}

@@ -1,0 +1,56 @@
+//confira: grafo eh uma tree conexa? Contem (self/multiple)-edges?
+//preprocessing the tree - O( N log N )
+//query - O( log N )
+
+vector<vector<int>> ns, up;
+vector<int> tin, tout;
+int n, timer, LOG;
+void dfs(int u, int p) {
+  tin[u] = ++timer;
+  up[u][0] = p;
+  
+  for(int i = 1; i <= LOG; ++i) {
+    const int v = up[u][i-1];
+    up[u][i] = up[v][i-1]; //2^n = 2 * 2^(n-1)
+  }
+  
+  for(int v : ns[u]) {
+    if(v == p) continue;
+    dfs(v, u);
+  }
+  tout[u] = ++timer;
+}
+
+//u eh ancestral de v?
+bool is_ancestor(int u, int v) {
+  return tin[u] <= tin[v] && tout[u] >= tout[v];
+}
+
+/* o LCA será o primeiro ancestral de u e v que satisfaz
+   a função is_ancestor() para ambos os vertices */
+int lca(int u, int v) {
+  if(is_ancestor(u, v)) return u;
+  if(is_ancestor(v, u)) return v;
+
+  for(int i = LOG; i >= 0; --i) {
+    int uu = up[u][i];
+    //se esse pulo ainda não chega a um ancestral comum
+    if(is_ancestor(uu, v) == false) {
+      u = uu;
+    }
+  }
+
+  //garantimos que u sempre sera o filho do LCA(u, v)
+  //entao, no final, basta acessar o pai de u
+
+  return up[u][0];
+}
+
+void preplca(int root) {
+  tin.resize(n+5);
+  tout.resize(n+5);
+  timer = 0;
+  LOG = ceil(log2(n))+1; // +1 so pra garantir
+  up.assign(n+5, vector<int>(LOG+5));
+  dfs(root, root);
+}

@@ -1,0 +1,30 @@
+//O(V+E)
+//Min-cut é executado após algum
+//algoritmo de fluxo máximo
+void dfs(int u, vector<bool> &group)
+{
+    group[u] = 0;
+    for(int v : list_adj[u]) {
+        if(group[v] and capacity[u][v] > 0)
+            dfs(v, group);
+    }
+}
+
+//lista de arestas do corte mínimo
+vector<pair<int,int>> mincut(int s)
+{
+    //0: grupo de s
+    //1: grupo de t
+    vector<bool> group(n, 1);
+    vector<pair<int,int>> cut_edge;
+
+    dfs(s, group);
+    for(int u = 0; u < n; u++) {
+        if(group[u]) continue;
+        for(int v : list_adj[u]) {
+            if(group[v]) cut_edge.push_back({u, v});
+        }
+    }
+
+    return cut_edge;
+}
