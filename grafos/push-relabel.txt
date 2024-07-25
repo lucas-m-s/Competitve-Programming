@@ -1,0 +1,80 @@
+/*
+O(V*E + V^2*sqrt(E)) = O(V^3)
+n = |V|
+cap[u][v] = capacidade total da aresta u->v
+flow[u][v] = fluxo da aresta u->v
+h[u] = altura do vértice u
+exc[u] = excesso de fluxo em u
+Algoritmo 0-based indexing
+*/
+int n;
+vector<vector<int>> cap, flow;
+vector<int> h, exc;
+
+//empurra o excesso de fluxo de u para v
+void push(int u, int v)
+{
+  int d = min(exc[u], cap[u][v] - flow[u][v]);
+  flow[u][v] += d;
+  flow[v][u] -= d;
+  exc[u] -= d;
+  exc[v] += d;
+}
+
+//aumenta a altura do vértice u
+void relabel(int u)
+{
+  int d = INF;
+  for(int i = 0; i < n; i++) {
+    if(cap[u][i] - flow[u][i] > 0)
+      d = min(d, h[i]);
+  }
+  if(d < INF) h[u] = d + 1;
+}
+
+//encontra vértices de maior altura
+vector<int> vmaxh(int s, int t)
+{
+  vector<int> maxh;
+  for(int i = 0; i < n; i++) {
+    if(i != s and i != t and exc[i] > 0) {
+      if(!maxh.empty() and h[i] > h[maxh[0]])
+        maxh.clear();
+      if(maxh.empty() or h[i] == h[maxh[0]])
+        maxh.push_back(i);
+    }
+  }
+  return maxh;
+}
+
+//máximo fluxo de s a t
+int maxflow(int s, int t)
+{
+  h.assign(n, 0);
+  h[s] = n;
+  flow.assign(n, vector<int>(n, 0));
+  exc.assign(n, 0);
+  exc[s] = INF;
+  for(int i = 0; i < n; i++) {
+    if(i != s) push(s, i);
+  }
+
+  vector<int> vertices;
+  while(!(vertices = vmaxh(s, t)).empty()) {
+    for(int i : vertices) {
+      bool pushed = false;
+      for(int j = 0; j < n and exc[i]; j++) {
+        if(cap[i][j] - flow[i][j] > 0 and h[i] == h[j] + 1) {
+          push(i, j);
+          pushed = true;
+        }
+      }
+      if(!pushed) {
+        relabel(i);
+        break;
+      }
+    }
+  }
+
+  return exc[t];
+}
