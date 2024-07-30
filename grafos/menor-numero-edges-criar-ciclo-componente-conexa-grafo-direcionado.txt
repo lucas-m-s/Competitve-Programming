@@ -1,0 +1,38 @@
+/// só funciona para grafos conexos
+/// para grafos desconexos será necessário condensação
+
+/// O(N + M) default, sem a condensação
+
+vector<int> in_(MAX), out_(MAX), vis(MAX);
+
+void dfs(int u) {
+  vis[u] = 1;
+  for(int v : ns[u]) {
+    out_[u] = 1, in_[v] = 1;
+    if(!vis[v]) {
+      dfs(v);
+    }
+  }
+}
+
+signed main() {
+  cin.tie(nullptr)->sync_with_stdio(0);
+
+  int n, m; cin>>n>>m;
+  for(int i = 0; i < m; ++i) {
+    int u, v; cin>>u>>v;
+    ns[u].emplace_back(v);
+  }
+  int totin = 0, totout = 0;
+  for(int i = 1; i <= n; ++i) {
+    if(!vis[i]) {
+      dfs(i);
+    }
+  }
+  for(int i = 1; i <= n; ++i) {
+    totin += in_[i], totout += out_[i];
+  }
+  // ou pode ser n - min(totin, totout) tbm creio eu
+  int ans = max(n - totin, n - totout);
+  cout<<ans<<'\n';
+}

@@ -1,0 +1,13 @@
+/// O(N log N) em memória e tempo
+
+vector<vector<int>> divs(MAX);
+void crivo() { /// 10^7 é mt tight
+	for(int i = 1; i < MAX; ++i) { //// ATENÇÃO, O 1 ESTÁ NA ÁREA!!!!
+		// pra dar uma agilizada, eh so adicionar j = i*i
+		// isso geralmente eh util qnd vc so quer saber
+		// se um num eh primo
+		for(int j = i; j < MAX; j += i) {
+			divs[j].push_back(i);
+		}
+	}
+}

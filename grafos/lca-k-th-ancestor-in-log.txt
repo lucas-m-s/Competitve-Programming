@@ -1,5 +1,7 @@
 //....
 //query - O( log N )
+//Algumas coisas do LCA são abstraídas,
+//pois já tem em outro código
 int root;
 void dfs(int u, int p) {
   tin[u] = ++timer;

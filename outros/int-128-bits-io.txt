@@ -1,0 +1,51 @@
+/// ATENÇÃO, DESATIVE O FAST IO PARA EVITAR BUGS
+// __int128 ou __int128_t? Acho q os dois dão bom
+// TO READ:  num = read()
+// TO PRINT: print(num)
+
+using i128 = __int128;
+
+i128 read() {
+  i128 x = 0, f = 1;
+  char ch = getchar();
+  while (ch < '0' || ch > '9') {
+    if (ch == '-') f = -1;
+    ch = getchar();
+  }
+  while (ch >= '0' && ch <= '9') {
+    // 48 = '0'
+    x = x * 10 + (ch - 48);
+    ch = getchar();
+  }
+  return x * f;
+}
+
+/// atenção desative o fast io para evitar bugs
+void print(i128 x) {
+  if (x < 0) {
+    putchar('-');
+    x = -x;
+  }
+  if (x > 9) print(x / 10);
+  putchar(x % 10 + 48);
+}
+
+/*
+input:
+123
+10000000000000000000000000
+-10
+
+expected output: 10000000000000000000000153
+*/
+void test() {
+  int n;
+  scanf("%d", &n); // ll? %lld
+  // fastio: cin>>n;
+  i128 a = read();
+  int m;
+  scanf("%d", &m); // ll? %lld
+  // fastio: cin>>m;
+  a += 40;
+  print(a + n + m);
+}
