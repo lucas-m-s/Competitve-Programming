@@ -1,0 +1,75 @@
+/*
+O(F*V*E), F = fluxo máx.
+Algoritmo funciona em grafos 
+não direcionados e multigrafos
+n = |V|
+Inicialização de edges e list_adj:
+  list_adj[u].push_back(edges.size());
+  edges.push_back({u, v, cap, cost});
+  list_adj[v].push_back(edges.size());
+  edges.push_back({v, u, 0, -cost});
+*/
+struct Edge {int u, v, cap, cost;};//u->v
+int n;
+vector<Edge> edges;
+vector<vector<int>> list_adj;
+
+//encontra um caminho mínimo
+void shortest_path(int s, vector<int> &d, vector<int> &p)
+{
+  d.assign(n, INF);
+  d[s] = 0;
+  vector<bool> inq(n, false);
+  queue<int> q;
+  q.push(s);
+  p.assign(n, -1);
+
+  while(!q.empty()) {
+    int u = q.front();
+    q.pop();
+    inq[u] = false;
+    for(int i : list_adj[u]) {
+      Edge &e = edges[i];
+      if(e.cap > 0 and d[e.v] > d[u] + e.cost) {
+        d[e.v] = d[u] + e.cost;
+        p[e.v] = i;
+        if(!inq[e.v]) {
+          inq[e.v] = true;
+          q.push(e.v);
+        }
+      }
+    }
+  }
+}
+
+//menor custo com fluxo = k (k = INF p/ fluxo máx.)
+pair<int,int> min_cost_flow(int k, int s, int t) 
+{
+  int flow = 0, cost = 0;
+  vector<int> d, p;
+  while(flow < k) {
+    shortest_path(s, d, p);
+    if(d[t] == INF) break;
+
+    //encontra o máximo fluxo no path
+    int f = k - flow, v = t;
+    while(v != s) {
+      Edge &e = edges[p[v]];
+      f = min(f, e.cap);
+      v = e.u;
+    }
+
+    //adiciona o fluxo no path
+    flow += f;
+    cost += f * d[t];
+    v = t;
+    while(v != s) {
+      Edge &e = edges[p[v]], &re = edges[p[v]^1];
+      e.cap -= f;
+      re.cap += f;
+      v = e.u;
+    }
+  }
+
+  return {flow, cost};
+}
