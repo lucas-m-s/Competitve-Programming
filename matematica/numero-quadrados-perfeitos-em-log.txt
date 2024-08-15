@@ -1,0 +1,9 @@
+// Número de quadrados perfeitos no intervalo [A, B] em O(log):
+
+// O(log)
+// floor sq(b) pois queremos <= b
+// ceil sq(a) pois queremos >= a
+// +1 por conta da inclusão do intervalo
+int countSquares(int a, int b) {
+    return (floor(sqrt(b)) - ceil(sqrt(a)) + 1);
+}

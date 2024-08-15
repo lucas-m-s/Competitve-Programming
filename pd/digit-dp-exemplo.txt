@@ -1,0 +1,62 @@
+/// Digit DP
+
+// A complexidade pode variar de dp pra dp
+// mas geralmente sera o estado1 * estado2 * estado3 * ... * max(ds[i])
+// creio que essa complexidade seja um bom upper bound, mas sempre revise
+
+/*
+Your task is to count the number of one bits in the binary representations of integers between 1 and n.
+n <= 10^15
+*/
+
+#include <bits/stdc++.h>
+#define int long long
+using namespace std;
+using ii = pair<int, int>;
+
+vector<int> ds;
+ii memo[70][2];
+
+/// geralmente vai ser uma dp do tipo:
+  // indice, uma flag para por exemplo landing zeros, "empatado"?
+ii dp(int i, int emp) {
+  if(i == (int)ds.size()) {
+    return {0, 1};
+  }
+  ii &ans = memo[i][emp];
+  if(ans.first != -1) return ans;
+  ans = {0, 0};
+  const int r = (emp ? ds[i] : 1);
+  for(int d = 0; d <= r; ++d) {
+    const int newemp = (emp && d == r);
+    const ii aux = dp(i+1, newemp);
+
+    // nesse momento fazemos algum calculo de propagação
+    // isso no caso vai variar de problema pra problema
+    ans.second += aux.second;
+    ans.first += (d == 1) * aux.second + aux.first;
+  }
+  return ans;
+}
+
+// O (Limpar_Memo + DigitDP)
+int prep(int n) {
+  // limpamos memo
+  for(int i = 0; i < 70; ++i) for(int j = 0; j < 2; ++j) memo[i][j] = {-1, -1};
+  
+  // pegamos os digitos de n, nesse caso na base 2
+  int nn = n;
+  ds.clear();
+  while(nn) { ds.push_back(nn%2), nn/=2; }
+
+  // revertemos a ordem dos digitos (importante)
+  reverse(ds.begin(), ds.end());
+  return dp(0, 1).first;
+};
+
+signed main() {
+  cin.tie(nullptr)->sync_with_stdio(0);
+
+  int n; cin>>n;
+  cout<<prep(n)<<'\n';
+}

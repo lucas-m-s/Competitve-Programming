@@ -1,0 +1,20 @@
+// precisa multiplicar por 2
+// por conta q tu conta +1 pro tin e pro tout
+// se tiver BIT, é a mesma pegada, sempre multiplica por 2
+
+// O(N + M)
+const int MAX = 2*MAXN+10;
+ 
+int n, m, timer = 0;
+int ns[MAX];
+vector<vector<int>> adj;
+vector<int> tin, tout;
+ 
+void dfs(int u, int p) {
+  tin[u] = ++timer;
+  for(int v : adj[u]) {
+    if(v == p) continue;
+    dfs(v, u);
+  }
+  tout[u] = ++timer;
+}

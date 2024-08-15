@@ -1,0 +1,19 @@
+// O(log)
+int findroot(int n, int b) {
+  int lo = 1, hi = n+1;
+  while(hi - lo > 1) {
+    const int md = (hi + lo) / 2;
+    int val = md;
+    for(int j = 1; j < b; ++j) {
+      val *= md;
+    }
+    if(val > n) hi = md;
+    else lo = md;
+  }
+  int val = hi;
+  for(int j = 1; j < b; ++j) {
+    val *= hi;
+  }
+  if(val <= n) lo = hi;
+  return lo;
+}

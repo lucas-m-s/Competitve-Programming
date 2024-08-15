@@ -1,0 +1,85 @@
+/// Digit DP + Binary Search
+
+/*
+You would like to write a list of positive integers 1,2,3,... using your computer. However, you can press each key 0-9 at most n times during the process.
+What is the last number you can write?
+
+n <= 10^18
+*/
+
+#include <bits/stdc++.h>
+#define int long long
+
+using namespace std;
+using ii = pair<int, int>;
+using ti = tuple<int, vector<int>>;
+
+vector<int> ds;
+ti memo[50][2][2];
+
+// pegamos a frequencia de cada digito de 1 até md e verificamos
+// se alguma frequencia extrapola n
+
+// dp (indice, landing_zeros?, empatado?)
+ti dp(int i, int land = 1, int emp = 1) {
+  if(i == (int)ds.size()) {
+    return make_tuple(1, vector<int>(10));
+  }
+  auto &[frq, frqs] = memo[i][land][emp];
+  if(frq != -1) return memo[i][land][emp];
+  const int r = (emp ? ds[i] : 9);
+  frq = 0;
+  for(int d = 0; d <= r; ++d) {
+    const auto [frq_, frqs_] = dp(i+1, land&&d==0, emp&&d==r);
+    if(d != 0 || !land) frqs[d] += frq_;
+    frq += frq_;
+    for(int j = 0; j < 10; ++j) {
+      frqs[j] += frqs_[j];
+    }
+  }
+  return make_tuple(frq, frqs);
+}
+
+// O (Limpar_Memo * DigitDP)
+ti prep(int n) {
+  // limpando memo
+  for(int i = 0; i < 50; ++i) {
+    for(int j =0 ; j < 2; ++j) {
+      for(int z = 0; z < 2; ++z) {
+        auto&[frq, frqs] = memo[i][j][z];
+        frq = -1, frqs = vector<int>(10);
+      }
+    }
+  }
+  
+  // pegando os digitos
+  ds.clear();
+  int nn = n;
+  while(nn) {
+    ds.push_back(nn%10), nn/=10;
+  }
+
+  // revertendo os digitos
+  reverse(ds.begin(), ds.end());
+  return dp(0);
+};
+
+signed main() {
+  cin.tie(0)->sync_with_stdio(0);
+
+  int n; cin>>n;
+  int lo = 0, hi = INT64_MAX;
+  while(lo < hi) {
+    //// cuidado com o overflow por conta do INT MAX
+    const int md = (hi + lo)/2;
+    const auto [frq, frqs] = prep(md);
+    int ok = 1;
+    for(int i = 0; i < 10; ++i) {
+      ok &= (frqs[i] <= n);
+    }
+    if(ok) lo = md + 1;
+    else hi = md;
+  }
+  --lo;
+  cout<<lo<<'\n';
+}

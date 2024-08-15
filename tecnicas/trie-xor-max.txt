@@ -1,0 +1,81 @@
+/// Trie XOR
+/// Inserção - O(NUM_BITS_MAX)
+/// Search - O(NUM_BITS_MAX)
+/// Erase - O(NUM_BITS_MAX)
+
+/// Confiabilidade: Média
+/// SE TIVER Q SUPORTAR LONG LONG, ALTERE MAXB -> 60+
+
+// RESOLVE PARA XOR
+// LEAFS CARREGAM OS VALORES DO INTEIRO FORMADO
+// REVISAR PLS
+
+struct vertex
+{
+	int frq = 0, val = -1;
+	vector<vertex *> child;
+	vertex() {
+		child.assign(2, NULL);
+	}
+};
+
+struct Trie {
+	const int MAXB = 60;
+
+	vertex *root;
+
+	Trie() {
+		root = new vertex();
+	}
+
+	void insert(int n)
+	{
+		vertex *cur = root;
+		for(int b = MAXB; b >= 0; --b) {
+			bool alphaNum = (n&(1ll<<b));
+			if (cur->child[alphaNum] == NULL) {
+				cur->child[alphaNum] = new vertex();
+			}
+			cur->child[alphaNum]->frq++;
+			cur = cur->child[alphaNum];
+		}
+		cur->val = n;
+	}
+
+	// retorna o valor tal que valor^n é o maximo possível
+	int search(int n)
+	{
+		vertex* cur = root;
+		int maxxor = -1, ans = -1;
+		for(int b = MAXB; b >= 0; --b) {
+			bool alphaNum = (n&(1ll<<b));
+			if(cur->child[!alphaNum] != NULL && cur->child[!alphaNum]->frq) {
+				const int val = cur->child[!alphaNum]->val;
+				if(val != -1) {
+					if((n ^ val) > maxxor) maxxor = (n ^ val), ans = val;
+				}
+				cur = cur->child[!alphaNum];
+			} else if (cur->child[alphaNum] != NULL && cur->child[alphaNum]->frq) {
+				const int val = cur->child[alphaNum]->val;
+				if(val != -1) {
+					if((n ^ val) > maxxor) maxxor = (n ^ val), ans = val;
+				}
+				cur = cur->child[alphaNum];
+			} else {
+				break;
+			}
+		}
+		return ans;
+	}
+
+	bool erase(int n)
+	{
+		vertex *cur = root;
+		for(int b = MAXB; b >= 0; --b) {
+			bool alphaNum = (n&(1ll<<b));
+			cur->child[alphaNum]->frq--;
+			cur = cur->child[alphaNum];
+		}
+		return 1;
+	}
+};

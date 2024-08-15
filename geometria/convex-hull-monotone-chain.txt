@@ -1,3 +1,7 @@
+#include <bits/stdc++.h>
+#define int long long
+using namespace std;
+
 /// MONOTONE CHAIN ALGORITHM
 /// O(N log N)
 
@@ -39,12 +43,15 @@ void convex_hull(vector<pt>& a, bool include_collinear = false) {
 
   for (int i = 1; i < (int)a.size(); i++) {
     if (i == (int)a.size() - 1 || cw(p1, a[i], p2, include_collinear)) {
-      while (up.size() >= 2 && !cw(up[up.size()-2], up[up.size()-1], a[i], include_collinear))
+      while (up.size() >= 2 &&
+      !cw(up[up.size()-2], up[up.size()-1], a[i], include_collinear))
         up.pop_back();
       up.push_back(a[i]);
     }
     if (i == (int)a.size() - 1 || ccw(p1, a[i], p2, include_collinear)) {
-      while (down.size() >= 2 && !ccw(down[down.size()-2], down[down.size()-1], a[i], include_collinear))
+      while ( down.size() >= 2 &&
+    		  !ccw(down[down.size()-2], down[down.size()-1],
+    		  a[i], include_collinear) )
         down.pop_back();
       down.push_back(a[i]);
     }
@@ -65,4 +72,15 @@ void convex_hull(vector<pt>& a, bool include_collinear = false) {
   for(pt v : lans) {
     cout<<v.x<<' '<<v.y<<'\n';
   }
+}
+
+signed main() {
+	cin.tie(nullptr)->sync_with_stdio(0);
+
+	int n; cin>>n;
+	vector<pt> ns(n);
+	for(int i = 0; i < n; ++i) {
+		cin>>ns[i].x>>ns[i].y;
+	}
+	convex_hull(ns, true);
 }

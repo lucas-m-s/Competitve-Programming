@@ -1,0 +1,37 @@
+/// Hashing com primo aleatorio, by me
+
+mt19937 rng((int) chrono::steady_clock::now().time_since_epoch().count());
+ 
+int uniform(int l, int r) {
+	uniform_int_distribution<int> uid(l, r);
+	return uid(rng);
+}
+
+vector<ll> init_ppow(int P, int MOD, int size = MAX) {
+	vector<ll> ppow = vector<ll>(size);
+	ppow[0] = 1;
+	f(i,0,size-2) {
+    ppow[i+1] = ppow[i] * P % MOD;
+  }
+	return ppow;
+}
+ 
+template<int MOD> struct str_hash {
+    static int P;
+		static vector<ll> ppow;
+
+		int size;
+    vector<ll> h;
+    str_hash(string s) : h(s.size()) {
+			size = s.size();
+			h[0] = s[0];
+			for (int i = 1; i < s.size(); i++)
+				h[i] = (h[i - 1]*P + s[i])%MOD;
+    }
+    ll operator()(int l, int r) { // retorna hash s[l...r]
+			ll hash = h[r] - (l ? h[l - 1]*ppow[r - l + 1]%MOD : 0);
+			return hash < 0 ? hash + MOD : hash;
+    }
+};
+template<int MOD> int str_hash<MOD>::P = uniform(256, MOD - 1);
+template<int MOD> vector<ll> str_hash<MOD>::ppow = init_ppow(str_hash<MOD>::P, MOD);

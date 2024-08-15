@@ -1,0 +1,75 @@
+int n, m;
+vector<vector<int>> ns, nsr;
+
+// SCC - O(N + M)
+// como usar: `scc::scc()` ou `scc::condscc()`
+namespace scc {
+  int countscc = 0, N, M;
+  vector<int> ordem, vis, getscc;
+  vector<vector<int>> sccs, nsc;
+
+  void dfs(int u) {
+    vis[u] = 1;
+    for (int v : ns[u]) {
+      if (!vis[v]) {
+        dfs(v);
+      }
+    }
+    ordem.emplace_back(u);
+  }
+
+  void dfsr(int u) {
+    vis[u] = 1;
+    getscc[u] = countscc;
+    sccs[countscc].emplace_back(u);
+    for (int v : nsr[u]) {
+      if (!vis[v]) {
+        dfsr(v);
+      }
+    }
+  }
+
+  int scc() { // retorna quantidade de SCC's
+    countscc = 0;
+    vis = vector<int>(n+1, 0);
+    getscc = vector<int>(n+5);
+
+    // 1a rodada
+    for (int u = 1; u <= n; ++u) {
+      if (!vis[u]) {
+        dfs(u);
+      }
+    }
+
+    // 2a rodada - revertendo
+    vis = vector<int>(n+1, 0);
+    sccs.emplace_back(vector<int>()); // 1-indexando grafo condensado
+    for (int i = n-1; i >= 0; i--) {
+      // Todos visitados aqui formam juntos uma componente fortemente conexa
+      if (!vis[ordem[i]]){
+        ++countscc;
+        sccs.emplace_back(vector<int>());
+        dfsr(ordem[i]);
+      }
+    }
+
+    ordem.clear();
+    return countscc;
+  }
+
+  void condscc() {
+    const int numscc = scc();
+    nsc = vector<vector<int>>(numscc + 5);
+    N = numscc, M = 0;
+    
+    // criando grafo condensado
+    for(int u = 1; u <= n; ++u) {
+      for(int v : ns[u]) {
+        if(getscc[u] != getscc[v]) { /// ACHO que não tem multiple edges nesse caso
+          nsc[getscc[u]].emplace_back(getscc[v]);
+          ++M; // verificar se não existem multiple-edges
+        }
+      }
+    }
+  }
+};

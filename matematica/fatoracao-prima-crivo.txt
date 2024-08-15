@@ -1,0 +1,36 @@
+/// Fatoracao prima usando crivo
+// Time Complexity : O(N log N)  (obs.: GFG falou q era N loglog N, ??)
+
+/// Pelo que eu sei, se o valor for primo, então spf[n] = n, mas revisar
+
+vector<int> spf(MAX + 5, 1);
+
+// Calculating SPF (Smallest Prime Factor) for every number till MAX.
+// O(N log N)
+void sieve() {
+  // stores smallest prime factor for every number
+  spf[0] = 0;
+  for (int i = 2; i <= MAX; i++) {
+    if (spf[i] == 1) { // if the number is prime ,mark
+                       // all its multiples who havent
+                       // gotten their spf yet
+      for (int j = i; j <= MAX; j += i) {
+        if (spf[j]== 1) // if its smallest prime factor is
+                        // 1 means its spf hasnt been
+                        // found yet so change it to i
+          spf[j] = i;
+      }
+    }
+  }
+}
+
+// A O(log N) function returning primefactorization
+// by dividing by smallest prime factor at every step
+vector<int> getFactorization(int x) {
+  vector<int> ret;
+  while (x != 1) {
+    ret.push_back(spf[x]);
+    x = x / spf[x];
+  }
+  return ret;
+}
