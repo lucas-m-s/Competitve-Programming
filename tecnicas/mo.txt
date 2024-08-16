@@ -1,0 +1,60 @@
+/// MO
+/// O(n * sqrt(q))
+
+/// mo(qs, BLOCK_SIZE) para utilizar
+/// soh precisa definir l, r, idx pra cada query, o bloco quem define eh a struct
+
+struct Query {
+  int l, r, i, b;
+
+  bool operator<(const Query aux) {
+    if(aux.b == b) {
+      if(b&1) return r > aux.r;
+      return r < aux.r;
+    }
+    return b < aux.b;
+  }
+};
+
+// tudo 0-indexado
+// pra deixar 1-indexado, basta fzr block(i) ((i-1)/B) e ajustar os ponteiros iniciais (creio eu)
+// perceba q as queries sao passadas por ref pra deixar mais rapido
+struct Mo {
+	#define block(i) (i/B)
+
+  const int MAX = 1e6+10;
+
+  int ans, freq[MAX]={0};
+
+  inline void insert(int x) {
+    ans -= frq[x] * frq[x] * x;
+    frq[x]++;
+    ans += frq[x] * frq[x] * x;
+  }
+
+  inline void erase(int x) {
+    ans -= frq[x] * frq[x] * x;
+    frq[x]--;
+    ans += frq[x] * frq[x] * x;
+  }
+
+  vector<int> operator()(vector<Query> &qs, int B) {
+    for(Query& q : qs) q.b = block(q.l);
+
+    ans = 0;
+    int m = qs.size();
+    sort(qs.begin(), qs.end());
+    
+    vector<int> ansq(m);
+    int l = 0, r = -1;
+
+    for (Query q : qs) {
+      while (r < q.r) insert(++r);
+      while (l > q.l) insert(--l);
+      while (l < q.l) erase(l++);
+      while (r > q.r) erase(r--);
+      ansq[q.i] = ans;
+    }
+    return ansq;
+  }
+} mo;

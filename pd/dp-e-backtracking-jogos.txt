@@ -1,0 +1,80 @@
+/// Ideia de DP e Backtracking em jogos
+
+/*
+Se você precisar fazer uma DP em um jogo de 2 jogadores que querem maximizar seu resultado, então:
+* Jogador 1: Quer aumentar a diferença
+* Jogador 2: Quer diminuir a diferença
+
+Sendo assim, só precisamos manter 2 estados, de maneira genérica:
+dp(jogador_atual, j) = max(dp(jogador_atual^1, j1), dp(jogador_atual^1, j2)
+
+Sendo j alguma determinada jogada. Mas em resumo, nesse tipo de problema você deve fazer 2 condicionais para cada jogador, como mostrado acima, sendo a maximização atribuída ao jogador 1 e a minimização atribuída ao jogador 2.
+*/
+
+/// Exemplo 1:
+int n, ns[MAX], memo[MAX][MAX][2];
+
+int dp(int l, int r, int p) {
+  if(l > r) return 0;
+  int &ans = memo[l][r][p];
+  if(ans != INF) return ans;
+  if(p == 0) {
+    ans = max(dp(l+1, r, p^1) + ns[l], dp(l, r-1, p^1) + ns[r]);
+  } else {
+    ans = min(dp(l+1, r, p^1) - ns[l], dp(l, r-1, p^1) - ns[r]);
+  }
+  return ans;
+}
+
+signed main() {
+  cin.tie(nullptr)->sync_with_stdio(0);
+
+  cin>>n;
+  for(int i = 0; i < n; ++i) {
+    cin>>ns[i];
+  }
+  for(int i = 0; i <= n; ++i) {
+    for(int j = 0; j <= n; ++j) {
+      memo[i][j][0] = INF, memo[i][j][1] = INF;
+    }
+  }
+  cout<<dp(0, n-1, 0)<<'\n';
+}
+
+
+/// Exemplo 2:
+/// Essa solução acabou por ser uma [backtracking] porque o problema permitia, mas em geral você quer fazer uma [DP].
+vt<vt<int>> cs(3, vt<int>(3)), ns(3, vt<int>(3));
+
+bool check() {
+  f(i,0,3) {
+    f(j,0,3) {
+      if(ns[i][j] == 0) continue;
+      f(I,0,8) {
+        int ii = i, jj = j, cnt = 0;
+        while(ii < 3 && ii >= 0 && jj < 3 && jj >= 0) {
+          cnt += ns[ii][jj] == ns[i][j];
+          ii += di[I], jj += dj[I];
+        }
+        if(cnt == 3) return true;
+      }
+    }
+  }
+  return false;
+}
+
+int bkt(int p = 0, int moves = 0) {
+  if(check()) return p == 0 ? -INF : INF;
+  if(moves == 9) return 0;
+
+  int ans = p == 0 ? -INF : INF;
+  f(i,0,3) f(j,0,3) {
+    if(!ns[i][j]) {
+      ns[i][j] = p+1;
+      if(p == 0) ans = max(ans, cs[i][j] + bkt(p^1, moves+1));
+      else ans = min(ans, -cs[i][j] + bkt(p^1, moves+1));
+      ns[i][j] = 0;
+    }
+  }
+  return ans;
+}

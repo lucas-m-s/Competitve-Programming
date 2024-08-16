@@ -1,0 +1,65 @@
+/// SQRT Decomposition
+/// Retorna quantos valores maiores que K no range [l, r]
+/// O(N * sqrt(N) * log(sqrt(N)))
+
+#include <bits/stdc++.h>
+#define gb(i) ((i-1)/B+1)
+#define sb(b) ((b-1)*B+1)
+#define eb(b) ((b)*B)
+using namespace std;
+ 
+const int B = 200;
+ 
+signed main() {
+  cin.tie(nullptr)->sync_with_stdio(0);
+ 
+  int n; cin>>n;
+  int numb = ceil(1.0*n/B);
+  vector<int> sb[numb+1];
+  int ns[n+1];
+  for(int i = 1; i <= n; ++i) {
+    cin>>ns[i];
+    sb[gb(i)].emplace_back(ns[i]);
+  }
+  for(int b = 1; b <= numb; ++b) {
+    sort(sb[b].begin(), sb[b].end());
+  }
+  int q; cin>>q;
+  while(q--) {
+    int l, r, k; cin>>l>>r>>k;
+    
+    int curb = gb(l), fb = gb(r);
+    int ans = 0;
+    if(curb == fb) {
+      for(int i = l; i <= r; ++i) {
+        ans += (ns[i] > k);
+      }
+      cout<<ans<<'\n';
+      continue;
+    }
+ 
+    int restinfirstb = 0, restinlastb = 0;
+    if(sb(gb(l)) < l) {
+      for(int i = l; i < sb(curb+1); ++i) {
+        ans += (ns[i] > k);
+      }
+      restinfirstb = 1;
+    }
+    
+    if(eb(gb(r)) > r) {
+      for(int i = sb(gb(r)); i <= r; ++i) {
+        ans += (ns[i] > k);
+      }
+      restinlastb = 1;
+    }
+ 
+    for(curb += restinfirstb; curb <= fb-restinlastb; ++curb) {
+      const auto it = lower_bound(sb[curb].begin(), sb[curb].end(), k+1);
+      if(it != sb[curb].end()) {
+        ans += B - (it - sb[curb].begin());
+      }
+    }
+ 
+    cout<<ans<<'\n';
+  }
+}

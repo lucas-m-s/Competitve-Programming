@@ -1,0 +1,31 @@
+/// Bridge
+/// O(V + E)
+
+int n, m, ans;
+int vis[MAX]={0}, tin[MAX]={0}, low[MAX]={0}, childs[MAX]={0};
+int timer = 0, origem;
+vector<pair<int, int>> bridges;
+vector<vector<int>> ns(MAX);
+
+void dfs(int u, int pai) {
+  ++timer;
+  tin[u] = timer;
+  low[u] = timer;
+  vis[u] = 1;
+  childs[u] = 1;
+  for(int v : ns[u]) {
+    if(vis[v] == 0) {
+      dfs(v, u);
+      low[u] = min(low[u], low[v]);
+      childs[u] += childs[v];
+    } else {
+      if(v == pai) continue;
+      low[u] = min(low[u], low[v]);
+    }
+  }
+
+  ////
+  if(u != origem && low[u] == tin[u]) {
+    bridges.emplace_back(pai, u);
+  }
+}

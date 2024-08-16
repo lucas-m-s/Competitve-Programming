@@ -1,0 +1,42 @@
+/// Exemplo Bitmask DP
+
+/// so sera possivel se o problema permitir um 2^x
+/// de alguma forma
+
+/// E sempre verifique se tem como abstrair um estado
+/// a partir de alguma informação da mask
+
+#include <bits/stdc++.h>
+#define int long long
+using namespace std;
+
+const int MOD = 1e9+7, MAX = 22;
+
+int n;
+int dp[1<<MAX], ns[MAX][MAX];
+
+signed main() {
+  cin.tie(nullptr)->sync_with_stdio(0);
+
+  memset(dp, 0, sizeof(dp));
+  cin>>n;
+  for(int i = 0; i < n; ++i) {
+    for(int j = 0; j < n; ++j) {
+      cin>>ns[i][j];
+      if(i == 0) dp[1<<j] = ns[i][j];
+    }
+  }
+
+  for(int mask = 1; mask < (1<<n); ++mask) {
+    // temos uma informação a partir do numero de bits da mask
+    const int i = __builtin_popcount(mask);
+    if(i == 1) continue;
+    for(int j = 0; j < n; ++j) {
+      if((mask&(1<<j)) && ns[i-1][j]) {
+        const int prev = mask - (1<<j);
+        dp[mask] = (dp[mask] + dp[prev]) % MOD;
+      }
+    }
+  }
+  cout<<dp[(1<<n)-1]<<'\n';
+}

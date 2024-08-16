@@ -1,0 +1,30 @@
+A Centroid Decomposition (Decomposição do Centróide) é uma técnica utilizada em estruturas de dados e algoritmos para decompor uma árvore em subárvores menores de forma a otimizar a resolução de diversos problemas, especialmente em cenários que envolvem árvores. Vamos explorar suas propriedades e vantagens:
+
+Propriedades da Centroid Decomposition:
+\begin{enumerate}
+    \item Definição do Centróide: Em uma árvore, um vértice é chamado de centróide se, ao removê-lo, todas as componentes resultantes (subárvores) tiverem no máximo.
+    
+    N/2 vértices, onde N o número total de vértices na árvore original.
+    \item Hierarquia dos Centróides: Ao aplicar repetidamente a decomposição, é possível criar uma hierarquia onde cada nível da hierarquia corresponde à remoção do centróide e a subsequente decomposição das subárvores resultantes.
+    \item Tempo de Construção: A Centroid Decomposition de uma árvore com N vértices pode ser construída em O(NlogN) tempo, sendo que a localização de cada centróide individual pode ser feita em O(N)
+    \item Altura da Árvore Decomposta: A altura da árvore resultante da decomposição é O(logN), o que reflete a eficiência da decomposição em termos de divisão das subárvores.
+\end{enumerate}
+
+Vantagens da Centroid Decomposition:
+\begin{enumerate}
+    \item Eficiência na Resolução de Problemas: Permite resolver problemas complexos em árvores, como cálculos de distâncias, contagens de caminhos e queries em subárvores, de maneira mais eficiente. Muitos desses problemas, que na árvore original poderiam ser resolvidos em.
+    
+    $O(N^2)$ podem ser resolvidos em O(NlogN) usando a Centroid Decomposition.
+    \item Facilitação de Queries Dinâmicas: A estrutura resultante permite lidar com queries dinâmicas de forma eficiente, pois cada subárvore é consideravelmente menor, e as operações podem ser feitas localmente em subárvores com um número reduzido de vértices.
+    \item Balanceamento de Subárvores: A decomposição garante que as subárvores sejam relativamente balanceadas (nenhuma subárvore terá mais que metade dos nós da árvore original), o que evita cenários de desequilíbrio que poderiam degradar o desempenho de algoritmos.
+    \item Aplicação em Algoritmos Avançados: Centroid Decomposition é uma base importante para vários algoritmos em grafos, como aqueles utilizados em problemas de teoria dos jogos, otimização combinatória, processamento de grandes quantidades de dados em árvores, e muito mais.
+    \item Simplicidade de Implementação: Comparado a outras técnicas de decomposição, a Centroid Decomposition é relativamente fácil de implementar, o que a torna uma escolha prática para muitos problemas.
+\end{enumerate}
+
+Exemplos de Aplicação:
+\begin{itemize}
+    \item Query de soma de pesos ao longo de um caminho: Usando Centroid Decomposition, esse tipo de problema pode ser resolvido eficientemente, mesmo quando aplicado a árvores grandes.
+    \item Contagem de pares a uma certa distância: Problemas como contar pares de vértices em uma árvore que estejam a uma certa distância também se beneficiam dessa técnica.
+\end{itemize}
+
+A Centroid Decomposition, portanto, é uma poderosa ferramenta para lidar com problemas que envolvem árvores, oferecendo uma estrutura mais equilibrada e permitindo otimizações significativas em diversos algoritmos.

@@ -1,0 +1,78 @@
+/// Inversion Count
+
+// o inversion aqui eh usado para:
+// inverter a ordem para que este problema seja resolvido com BIT
+///// visto que caso a ordem fosse de 1..N o BIT guardaria a soma acumulada de forma errada
+///// e o que queremos nesse algoritmo eh utilizar BIT para saber quantas posicoes estao invalidas
+///// a partir de um indice "i", que infelizmente nao conseguira ser acessado de forma "normal" (crescente)
+///// justamente pela explicacao acima
+///// considere um exemplo:
+///// [1 2 3 5 4 6] => ans = 1
+///// nesse caso quando eu pegasse o numero de posicoes erradas a partir de "i"
+///// eu pegaria a soma das posicoes erradas de acordo com todos os indices vistos ate agora
+///// por exemplo query(6): 1 // (por conta da query(4) = 1) sendo que o 6 esta na posicao que deveria estar
+
+/*
+ 1  2  3  4  5
+[3, 2, 1, 4, 5]
+[5, 4, 3, 2, 1]
+
+query(3) = 0 => [0, 0, 1, 0, 0]..
+query(2) = 1 => [0, 0, 1, 1, 0]..
+query(1) = 2 => [0, 0, 1, 1, 1]..
+query(4) = 0 => [0, 1, 1, 1, 1]..
+query(5) = 0 => [1, 1, 1, 1, 1]...
+ans      = 3
+*/
+
+// veja que o BIT encaixa perfeitamente quando utilizamos o inversion
+
+#include <bits/stdc++.h>
+using namespace std;
+
+#define f(i,s,t) for(int i = s; i < t; ++i)
+#define bms(x) (x)&(-x)
+
+int n;
+vector<int> ft;
+
+void update(int delta, int x) {
+  while(delta <= n) {
+    ft[delta] += x;
+    delta += bms(delta);
+  }
+}
+
+int query(int delta) {
+  int ans = 0;
+  while(delta > 0) {
+    ans += ft[delta];
+    delta -= bms(delta);
+  }
+  return ans;
+}
+
+vector<int> ns, inv;
+
+int main() {
+  cin>>n;
+  ns = inv = ft = vector<int>(n+3);
+  f(i,1,n+1) {
+    cin>>ns[i];
+    inv[i] = n+1-i;
+  }
+  int ans = 0;
+  f(i,1,n+1) {
+    // pegamos o inversion de ns[i], se retornar valor...
+    // quer dizer que tem posicoes que nao estao em ordem
+    // antes do indice atual
+    // pegamos o numero de posicoes que nao estao em ordem antes do indice atual..
+    // utilizando BIT e somamos a resposta, considerando isso como o numero de inversoes
+    ans += query(inv[ns[i]]);
+    // apos isso atualizamos o inversion de ns[i]
+    // sendo assim qualquer posicao que vier depois de inversion[atual] considerara inversion[atual] como invalida..
+    // considerando ela na BIT, quando for chamada a query(inv[ns[i]])
+    update(inv[ns[i]], 1);
+  }
+  cout<<ans<<'\n';
+}

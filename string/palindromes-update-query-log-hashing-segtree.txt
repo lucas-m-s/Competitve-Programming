@@ -1,0 +1,86 @@
+/// Query & Update in Palindromes in O(log)
+/// Hashing in SegTree
+
+int n, q, op, a, b, ppow[MAX], P = 31;
+char v;
+string p;
+
+struct Node {
+  int v, l, r;
+  
+  Node operator+(const Node b) {
+    Node ans;
+    if(r == -1) return b;
+    else if(b.r == -1) return {v, l, r};
+    ans.l = min(l, b.l), ans.r = max(r, b.r);
+    ans.v = (v + b.v * ppow[r-l+1]) % MOD;
+    return ans;
+  }
+};
+
+struct SEG {
+  // ... #defines
+
+  Node seg[MAX<<2];
+
+  void build(int u, int l, int r) {
+    if(l == r) {
+      seg[u] = {p[l-1], l, r};
+    } else {
+      const int m = m(l, r);
+      build(e(u), l, m), build(d(u), m+1, r);
+      seg[u] = seg[e(u)] + seg[d(u)];
+    }
+  }
+
+  void update(int u, int l, int r) {
+    if(l == r) {
+      seg[u].v = v;
+      return;
+    }
+    const int m = m(l, r);
+    if(a <= m) update(e(u), l, m);
+    else update(d(u), m+1, r);
+    seg[u] = seg[e(u)] + seg[d(u)];
+  }
+
+  Node query(int u, int l, int r) {
+    if(out) return {0, -1, -1};
+    if(in) return seg[u];
+    const int m = m(l, r);
+    return query(e(u), l, m) + query(d(u), m+1, r);
+  }
+} seg[2];
+
+signed main() {
+  cin.tie(nullptr)->sync_with_stdio(0);
+
+  ppow[0] = 1;
+  f(i,0,MAX-2) {
+    ppow[i+1] = ppow[i] * P % MOD;
+  }
+
+  int m;
+  cin>>n>>m>>p;
+  
+  seg[0].build(1,1,n);
+  reverse(be(p));
+  seg[1].build(1,1,n);
+
+  while(m--) {
+    cin>>op>>a;
+    if(op == 1) {
+      cin>>v;
+      seg[0].update(1,1,n);
+      a = n - a + 1;
+      seg[1].update(1,1,n);
+    } else {
+      cin>>b;
+      const int aux1 = seg[0].query(1,1,n).v;
+      int A = a, B = b;
+      a = n-b+1, b = n-A+1;
+      const int aux2 = seg[1].query(1,1,n).v;
+      cout<<(aux1 == aux2 ? "Yes\n" : "No\n");
+    }
+  }
+}

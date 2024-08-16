@@ -1,0 +1,56 @@
+//// Hashing de String (ordem não importa)
+
+//// Apenas retiramos a multiplicação da potência e deixamos apenas uma PSA lexicográfica
+//// Para evitar falso positivo, adicionamos 2 módulos e um fpow do s[i] pelo primo P aleatório
+
+
+#include <bits/stdc++.h>
+#define int long long
+using namespace std;
+using ll = long long;
+
+const int MOD_E9 = 1e9+7, MOD2 = 998244353, MOD3 = 37139213;
+
+mt19937 rng((int) chrono::steady_clock::now().time_since_epoch().count());
+
+ll fpow(ll b, ll e, ll m) {
+  ll result = 1;
+  b %= m;
+  while (e > 0) {
+    if (e&1) result = (1ll * result * b) % m;
+    e >>= 1;
+    b = (1ll * b * b) % m;
+  }
+  return result;
+}
+ 
+int uniform(int l, int r) {
+	uniform_int_distribution<int> uid(l, r);
+	return uid(rng);
+}
+ 
+template<int MOD1, int MOD2> struct str_hash {
+	static int P;
+	vector<pair<ll, ll>> h;
+	str_hash(string s) : h(s.size()) {
+		for (int i = 0; i < s.size(); i++) {
+			h[i].first = ((i ? h[i - 1].first : 0) + fpow(s[i], P, MOD1) % MOD1) % MOD1;
+			h[i].second = ((i ? h[i - 1].second : 0) + fpow(s[i], P, MOD2) % MOD2) % MOD2;
+    }
+	}
+	pair<ll, ll> operator()(int l, int r) { // retorna hash s[l...r]
+    pair<ll, ll> hash = {
+      (h[r].first - (l ? h[l - 1].first : 0) + MOD1) % MOD1,
+      (h[r].second - (l ? h[l - 1].second : 0) + MOD2) % MOD2};
+		return hash;
+	}
+};
+template<int MOD1, int MOD2> int str_hash<MOD1, MOD2>::P = uniform(256, min(MOD1, MOD2) - 1); // l > |sigma|
+
+
+signed main() {
+  cin.tie(nullptr)->sync_with_stdio(0);
+
+  str_hash<MOD2, MOD3> hash("abc"), hash1("bca");
+  cout<<hash(0, 2).first<<' '<<hash1(0, 2).first<<'\n'<<hash(0, 1).first<<' '<<hash1(0, 1).first<<'\n'<<hash(0, 0).first<<' '<<hash1(0, 0).first<<'\n';
+}

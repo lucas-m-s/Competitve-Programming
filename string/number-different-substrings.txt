@@ -1,0 +1,12 @@
+/// Number of different substrings
+/// calcule o LCP antes, de preferencia da lib do bruno
+
+// O(N)
+const auto num_diff_substrings = [&]() {
+  const int tot = (n*n + n) / 2; // creio q isso sempre vai ser inteiro, n precisa pensar mto
+  int soma = 0;
+  for(int i = 0; i < n-1; ++i) {
+    soma += sa.lcp[i];
+  }
+  return tot - soma;
+};

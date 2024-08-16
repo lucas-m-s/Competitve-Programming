@@ -1,0 +1,25 @@
+/// Subset Sum
+/// O(n * sum) - TIME
+/// O(sum) - MEM
+
+bool isSubsetSum(vector<int> arr, int sum) {
+    int n = arr.size();
+    // vector to store the current state and previous state
+    vector<bool> prev(sum + 1, false), curr(sum + 1);
+
+    // Mark prev[0] = true as it is true to make sum = 0
+    // using 0 elements
+    prev[0] = true;
+
+    // Fill the subset table in bottom up manner
+    for (int i = 1; i <= n; i++) {
+        for (int j = 0; j <= sum; j++) {
+            if (j < arr[i - 1])
+                curr[j] = prev[j];
+            else
+                curr[j] = (prev[j] || prev[j - arr[i - 1]]);
+        }
+        prev = curr;
+    }
+    return prev[sum];
+}

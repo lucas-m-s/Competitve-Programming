@@ -1,21 +1,73 @@
-//O(V*E)
-struct Edge {int a, b, w;};
-int n, m;//n=|V|, m=|E|
+// Bellman Ford
+// O(V * E)
 
-vector<int> bellmanford(int s, vector<Edge> &edges)
-{
-    vector<int> dist(n, INF);//0-based indexing
-    dist[s] = 0;//s é o vértice de início
-    bool neg;
-    for(int i = 0; i < n; i++){
-        neg = 0;
-        for(auto e : edges){
-            if(dist[e.a] != INF and dist[e.b] > dist[e.a] + e.w){
-                dist[e.b] = dist[e.a] + e.w;
-                neg = 1;
-            }
-        }
+// geralmente so vai servir pra checar negcy
+/// se for usado pra outra coisa, certifique que: GRAFO EH CONEXO E PASSA EM O(VE)
+
+#include <bits/stdc++.h>
+#define int long long
+using namespace std;
+using ii = pair<int, int>;
+
+const int INF = 1ll<<60;
+
+struct E {
+  int u, v, w;
+};
+
+int n, m;
+vector<E> ns; // nn vou definir por padrao pois temos O(VE) e isso talvez de overflow em alguns problemas
+vector<int> dist;
+vector<int> pai; // referente ao pai de v pelo caminho criado no BF, nao na definição das arestas
+
+void bellman_ford(int s) {
+  int lastv = -1;
+  bool changed = false;
+  for(int re = 1; re <= n+2; ++re) {
+    changed = false;
+    for(E e : ns) {
+      int u = e.u, v = e.v, w = e.w;
+      if(dist[u] + w < dist[v]) {
+        if(dist[u] + w > -INF && dist[u] + w < INF) dist[v] = dist[u] + w;
+        changed = true;
+        lastv = v;
+        pai[v] = u;
+      }
     }
-    if(neg) cout << "Tem ciclo negativo\n";
-    return dist;
+    if(changed == false) break;
+  }
+  
+  if(changed == true) { // mudança indevida
+    int x = lastv;
+    for(int k = 0; k <= n+2; ++k) { // rodando
+      x = pai[x];
+    }
+    int x_ = x;
+    vector<int> cycle;
+    do {
+      cycle.emplace_back(x_);
+      x_ = pai[x_];
+    } while(x_ != x);
+    
+    cout<<"YES\n";
+    reverse(cycle.begin(), cycle.end());
+    cout<<x<<' ';
+    for(int v : cycle) cout<<v<<' ';
+    cout<<'\n';
+    exit(0);
+  }
+}
+
+signed main() {
+  cin.tie(nullptr)->sync_with_stdio(0);
+
+  cin>>n>>m;
+  dist.assign(n+5, 0); // zero pq meu objetivo é checar neg cy, se nn eu setava INF
+  pai.assign(n+5, -1);
+  for(int i = 0 ;i < m; ++i) {
+    int u, v, w; cin>>u>>v>>w;
+    ns.push_back({ u, v, w });
+  }
+  bellman_ford(1);
+  cout<<"NO\n";
 }

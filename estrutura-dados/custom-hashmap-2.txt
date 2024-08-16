@@ -1,0 +1,16 @@
+/// custom hashmap 2
+
+#include <ext/pb_ds/assoc_container.hpp>
+using namespace __gnu_pbds;
+
+unsigned hashfoo(unsigned x) {
+  x = ((x >> 16) ^ x) * 0x45d9f3b;
+  x = ((x >> 16) ^ x) * 0x45d9f3b;
+  x = (x >> 16) ^ x;
+  return x;
+}
+struct customhash {
+  int operator()(int x) const { return hashfoo(x); }
+};
+
+gp_hash_table<int, int, customhash> mp;

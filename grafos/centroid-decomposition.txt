@@ -1,0 +1,79 @@
+/// Centroid Decomposition
+
+// para cada componente, teremos um "lider" de certa forma
+// esse lider sera a centroid
+
+#include <bits/stdc++.h>
+using namespace std;
+
+struct CentroidD {
+  vector<int> sub, ans;
+  vector<vector<pair<int, int>>> ddad;
+  vector<bool> rem;
+
+  CentroidD(int n) {
+    ddad.assign(n+5, vector<pair<int, int>>());
+    sub.assign(n+5, 0);
+    ans.assign(n+5, INF);
+    rem.assign(n+5, 0);
+    build(1);
+  }
+
+  int dfs(int u, int p) {
+    sub[u] = 1;
+    for(int v : ns[u]) {
+      if(v == p || rem[v] == 1) continue;
+      sub[u] += dfs(v, u);
+    }
+    return sub[u];
+  }
+
+  int get_cent(int u, int p, int n) {
+    for(int v : ns[u]) {
+      if(v == p || rem[v] == 1) continue;
+      if(sub[v] > n / 2) {
+        return get_cent(v, u, n);
+      }
+    }
+    return u;
+  }
+
+  void get_dist(int u, int cent, int p = -1, int d = 1) {
+    for(int v : ns[u]) {
+      if(v == p || rem[v]) continue;
+      get_dist(v, cent, u, d+1);
+    }
+    ddad[u].emplace_back(cent, d);
+  }
+
+  void build(int u) {
+    const int n = dfs(u, -1);
+    const int centroid = get_cent(u, -1, n);
+
+    for(int v : ns[centroid]) {
+      if(rem[v]) continue;
+      get_dist(v, centroid, centroid);
+    }
+    
+    rem[centroid] = 1;
+    for(int v : ns[centroid]) {
+      if(rem[v]) continue;
+      build(v);
+    }
+  }
+
+  void update(int u, int p, int o) {
+    ans[u] = 0;
+    for(pair<int, int>& a : ddad[u]) {
+      ans[a.first] = min(ans[a.first], a.second);
+    }
+  }
+
+  int query(int u, int p, int o) {
+    int ans_ = ans[u];
+    for(pair<int, int>& a : ddad[u]) {
+      ans_ = min(ans_, a.second + ans[a.first]);
+    }
+    return ans_;
+  }
+};

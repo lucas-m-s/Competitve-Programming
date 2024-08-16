@@ -1,0 +1,18 @@
+/// uso ex.: ordered_set<int>
+/// inserir, remover, acessar indice e buscar valor: O(log)
+
+/// *find_by_order(i) : valor na posicao i, 0-indexado
+/// order_of_key(x) :
+///    em que posicao esta o valor x, 0-indexado
+///    se nao tiver esse valor no set retorna st.size()
+
+// coloca isso logo apos o primeiro include
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+
+// coloca isso logo apos o using namespace std
+using namespace __gnu_pbds;
+template<typename T>
+using ordered_set = tree<T, null_type, less<T>,
+rb_tree_tag, tree_order_statistics_node_update>; 
+//--------------------------------------------------------------

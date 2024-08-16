@@ -1,0 +1,20 @@
+/// Shell Sort - O(NlogN)
+/// fast
+
+template <typename T>
+void shell_sort(vector<T> &v) {
+  int h = 1, i, j, rep = 0, size = int(v.size());
+  while (h < size) {
+    h = h*3+1;
+  }
+  while (h > 1) {
+    h /= 3;
+    for (i = h; i < size; i++) {
+      T aux = v[i], j = i;
+      while (j >= h && aux < v[j-h]) {
+        v[j] = v[j-h], j -= h, ++rep;
+      }
+      v[j] = aux;
+    }
+  }
+}

@@ -1,0 +1,47 @@
+/// Inversion Count - Estrategia 2
+
+// mesma ideia da 1 mas sem utilizar o inversion
+// em vez disso utilizaremos o for de tras pra frente
+// isso mesmo meu nobre(a) isso eh bem mais facil e rapido
+// a outra maneira parece uma perca de tempo perto dessa, sim eu sei
+
+#include <bits/stdc++.h>
+using namespace std;
+
+#define f(i,s,t) for(int i = s; i < t; ++i)
+#define fd(i,t,s) for(int i = t; i >= s; --i)
+#define bms(x) (x)&(-x)
+
+int n;
+vector<int> ft;
+
+void update(int delta, int x) {
+  while(delta <= n) {
+    ft[delta] += x;
+    delta += bms(delta);
+  }
+}
+
+int query(int delta) {
+  int ans = 0;
+  while(delta > 0) {
+    ans += ft[delta];
+    delta -= bms(delta);
+  }
+  return ans;
+}
+
+vector<int> ns;
+
+int main() {
+  cin>>n;
+  ns = ft = vector<int>(n+3);
+  f(i,1,n+1) cin>>ns[i];
+  int ans = 0;
+  f(i,1,n+1) {
+    cout<<i<<' '<<ns[i]<<' '<<query(ns[i])<<'\n';
+    ans += query(ns[i]);
+    update(ns[i], 1);
+  }
+  cout<<ans<<'\n';
+}

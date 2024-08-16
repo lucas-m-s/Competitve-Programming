@@ -1,0 +1,75 @@
+/// Hashing de vector
+/// Ordem não importa
+/// sem repetição
+/// set
+
+#include <bits/stdc++.h>
+#define int long long
+using namespace std;
+using ll = long long;
+
+const int MOD_E9 = 1e9+7, MOD2 = 998244353, MOD3 = 37139213;
+
+mt19937 rng((int) chrono::steady_clock::now().time_since_epoch().count());
+
+ll fpow(ll b, ll e, ll m) {
+  ll result = 1;
+  b %= m;
+  while (e > 0) {
+    if (e&1) result = (1ll * result * b) % m;
+    e >>= 1;
+    b = (1ll * b * b) % m;
+  }
+  return result;
+}
+ 
+int uniform(int l, int r) {
+	uniform_int_distribution<int> uid(l, r);
+	return uid(rng);
+}
+ 
+template<int MOD1, int MOD2> struct vt_hash {
+	static int P;
+	vector<pair<ll, ll>> h;
+	vt_hash(vector<int> ns) : h(ns.size()) {
+    set<int> st; /// se for com repetição eh so tirar isso aqui
+		for (int i = 0; i < ns.size(); i++) {
+      if(st.count(ns[i])) { /// se for com repetição eh so tirar isso aqui
+        h[i] = h[i-1];
+        continue;
+      }
+      st.emplace(ns[i]); /// se for com repetição eh so tirar isso aqui
+			h[i].first = ((i ? h[i - 1].first : 0) + fpow(ns[i], P, MOD1)%MOD1) % MOD1;
+			h[i].second = ((i ? h[i - 1].second : 0) + fpow(ns[i], P, MOD2)%MOD2) % MOD2;
+    }
+	}
+	pair<ll, ll> operator()(int l, int r) { // retorna hash s[l...r]
+    pair<ll, ll> hash = {
+      (h[r].first - (l ? h[l - 1].first : 0) + MOD1) % MOD1,
+      (h[r].second - (l ? h[l - 1].second : 0) + MOD2) % MOD2};
+		return hash;
+	}
+};
+template<int MOD1, int MOD2> int vt_hash<MOD1, MOD2>::P = uniform(256, min(MOD1, MOD2) - 1); // l > |sigma|
+
+
+signed main() {
+  cin.tie(nullptr)->sync_with_stdio(0);
+
+  int n; cin>>n;
+  vector<int> as(n), bs(n);
+  for(int i =0 ; i < n; ++i) {
+    cin>>as[i];
+  }
+  for(int i =0 ; i < n; ++i) {
+    cin>>bs[i];
+  }
+  vt_hash<MOD2, MOD3> has(as), hbs(bs);
+  int q; cin>>q;
+  while(q--) {
+    int r1, r2; cin>>r1>>r2;
+    --r1, --r2; /// 0-indexando
+    const pair<ll, ll> A = has(0, r1), B = hbs(0, r2);
+    cout<<(A.first == B.first && A.second == B.second ? "Yes\n" : "No\n");
+  }
+}

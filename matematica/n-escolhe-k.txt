@@ -1,0 +1,31 @@
+// N chooses K combinatorics
+// dont forget to start factorial with start_fact()
+
+// start_fact = O(MAX)
+// nCk(n, k) = O(log)
+
+int fact[MAX+5];
+
+ll fpow(ll b, ll e, ll m) {
+  ll result = 1;
+  b %= m; // seila, tvlz de ruim
+  while (e > 0) {
+    if (e&1) result = (1ll * result * b) % m;
+    e >>= 1;
+    b = (1ll * b * b) % m;
+  }
+  return result;
+}
+
+ll modinv(ll a, ll b) { return fpow(a, b - 2, b); }
+
+void start_fact() {
+  fact[0] = 1;
+  for (int i = 1; i <= MAX; i++) {
+    fact[i] = fact[i - 1] * i % MOD;
+  }
+}
+
+int nCk(int n, int k) {
+  return fact[n] * modinv(fact[k] * fact[n - k] % MOD, MOD) % MOD;
+}

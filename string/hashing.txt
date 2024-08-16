@@ -1,0 +1,20 @@
+struct Hash { /// 1 BASED
+  ll mod, p = 31;
+  vector<ll> hash_, ppow;
+  
+  void init(string s, ll mod_ = 1e9+9) {
+    mod = mod_;
+    hash_.assign(s.size()+5, 0);
+    ppow.assign(s.size()+5, 0);
+    ppow[0] = 1;
+    for(ll i = 0; i < s.size(); ++i) {
+      ppow[i+1] = ppow[i] * p % mod;
+      hash_[i+1] = (s[i] + hash_[i] * p) % mod;
+    }
+  }
+
+  ll operator()(ll l, ll r) {
+    const ll hash = hash_[r] - hash_[l-1] * ppow[r-l+1] % mod;
+    return hash < 0 ? hash + mod : hash;
+  }
+};

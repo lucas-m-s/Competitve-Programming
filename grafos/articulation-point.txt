@@ -1,0 +1,37 @@
+/// Articulation Point
+/// O(V + E)
+
+// Esse código não dá bom quando o problema permite multiplas arestas
+// pra corrigir isso, adicione ids para as arestas
+// Disponivel em:
+// https://docs.google.com/presentation/d/1H0tx1EBgh_CddexBG5BoJzgNRsRa9lJTY4CDepukY4Y/edit#slide=id.g2ae2e028092_0_1958
+
+int timer = 0, origem;
+vector<int> tin(MAX), low(MAX), vis(MAX), aps;
+vector<vector<int>> ns(MAX);
+
+void dfs(int u, int pai) {
+  timer++;
+  tin[u] = timer;
+  low[u] = timer;
+  vis[u] = 1;
+  bool ap = false;
+  int childs = 0;
+  for(int v : ns[u]) {
+    if(vis[v] == 0) {
+      ++childs;
+      dfs(v, u);
+      low[u] = min(low[u], low[v]);
+
+      if(low[v] >= tin[u]) {
+        ap = true;
+      }
+    } else {
+      if(v == pai) continue;
+
+      low[u] = min(low[u], tin[v]);
+    }
+  }
+  if(u == origem && childs >= 2) aps.push_back(u);
+  if(u != origem && ap) aps.push_back(u);
+}
