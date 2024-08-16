@@ -1,0 +1,23 @@
+struct BIT {
+  int ft[MAX+5] = {0};
+ 
+  void update(int d, int v) {
+    while(d <= MAX-2) {
+      ft[d] += v;
+      d += (d&-d);
+    }
+  }
+ 
+  int query(int d) {
+    int ans = 0;
+    while(d > 0) {
+      ans += ft[d];
+      d -= (d&-d);
+    }
+    return ans;
+  }
+ 
+  int query(int l, int r) {
+    return query(r) - query(l-1);
+  }
+} bit;

@@ -1,0 +1,99 @@
+/// Segtree Lazy Propagation
+/// Build - O(NlogN)
+/// Query/Update - O(logN)
+
+#include <bits/stdc++.h>
+using namespace std;
+ 
+const int MAX = 2e5+5;
+ 
+int ns[MAX];
+int n;
+ 
+struct Node {
+  long long v;
+  
+  Node operator+(Node b) {
+    return {v + b.v};
+  }
+ 
+  void operator=(int v_) {
+    v = v_;
+  }
+};
+ 
+struct SEG {
+  #define m(l, r) ((l+r)>>1LL)
+  #define e(u) (u<<1LL)
+  #define d(u) (e(u)|1)
+  #define out (l > r || l > b || r < a)
+  #define in (a <= l && r <= b)
+  #define range(v) (r-l+1LL)*v
+ 
+  Node seg[MAX<<2], lazy[MAX<<2] = {0};
+ 
+  void build(int u, int l, int r) {
+    if(l == r) {
+      seg[u] = ns[l];
+    } else {
+      const int m = m(l, r);
+      build(e(u), l, m), build(d(u), m+1, r);
+      seg[u] = seg[e(u)] + seg[d(u)];
+    }
+  }
+ 
+  void lazyP(int u, int l, int r) {
+    if(lazy[u].v) {
+      seg[u].v += range(lazy[u].v);
+      if(l != r) lazy[e(u)].v += lazy[u].v, lazy[d(u)].v += lazy[u].v;
+      lazy[u] = 0;
+    }
+  }
+ 
+  void update(int u, int l, int r, int a, int b, int v) {
+    lazyP(u, l, r);
+    if(out) return;
+    if(in) {
+      seg[u].v += range(v);
+      if(l != r) lazy[e(u)].v += v, lazy[d(u)].v += v;
+      return;
+    }
+    const int m = m(l, r);
+    update(e(u), l, m, a, b, v), update(d(u), m+1, r, a, b, v);
+    seg[u] = seg[e(u)] + seg[d(u)];
+  }
+ 
+  Node query(int u, int l, int r, int a, int b) {
+    lazyP(u, l, r);
+    if(out) return {0};
+    if(in) return seg[u];
+    const int m = m(l, r);
+    return query(e(u), l, m, a, b) + query(d(u), m+1, r, a, b);
+  }
+ 
+  void clear(int n) {
+    for(int i = 0; i <= n; ++i) {
+      seg[i] = 0, lazy[i] = 0;
+    }
+  }
+} seg;
+ 
+signed main() {
+  cin.tie(nullptr)->sync_with_stdio(0);
+ 
+  int q; cin>>n>>q;
+  for(int i = 1; i <= n; ++i) {
+    cin>>ns[i];
+  }
+  seg.build(1,1,n);
+  while(q--) {
+    int op; cin>>op;
+    if(op == 1) {
+      int l, r, v; cin>>l>>r>>v;
+      seg.update(1,1,n, l, r, v);
+    } else {
+      int k; cin>>k;
+      cout<<seg.query(1,1,n, k, k).v<<'\n';
+    }
+  }
+}

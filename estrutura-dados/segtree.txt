@@ -1,0 +1,81 @@
+/// SEGTREE
+/// Build - O(NlogN)
+/// Query/Update - O(log)
+
+#include <bits/stdc++.h>
+using namespace std;
+ 
+const int MAX = 2e5+5;
+ 
+int n, q, op;
+int ns[MAX];
+ 
+struct Node {
+  long long v;
+  
+  Node operator+(const Node b) {
+    return {v + b.v};
+  }
+ 
+  void operator=(const int b) {
+    v = b;
+  }
+};
+ 
+struct SEG {
+  #define m(l, r) ((l+r)>>1LL)
+  #define e(u) (u<<1LL)
+  #define d(u) (e(u)|1)
+  #define out (l > r || l > b || r < a)
+  #define in (a <= l && r <= b)
+ 
+  Node seg[MAX<<2]={0};
+ 
+  void build(int u, int l, int r) {
+    if(l == r) {
+      seg[u] = ns[l];
+    } else {
+      const int m = m(l, r);
+      build(e(u), l, m), build(d(u), m+1, r);
+      seg[u] = seg[e(u)] + seg[d(u)];
+    }
+  }
+ 
+  void update(int u, int l, int r, int a, int b) {
+    if(l == r) {
+      seg[u] = b;
+      return;
+    }
+    const int m = m(l, r);
+    if(a <= m) update(e(u), l, m, a, b);
+    else update(d(u), m+1, r, a, b);
+    seg[u] = seg[e(u)] + seg[d(u)];
+  }
+ 
+  Node query(int u, int l, int r, int a, int b) {
+    if(out) return {0};
+    if(in) return seg[u];
+    const int m = m(l, r);
+    return query(e(u), l, m, a, b) + query(d(u), m+1, r, a, b);
+  }
+} seg;
+ 
+int main() {
+  ios_base::sync_with_stdio(0), cin.tie(nullptr);
+ 
+  cin>>n>>q;
+  for (int i = 1; i <= n; ++i) cin>>ns[i];
+  seg.build(1,1,n);
+ 
+  while(q--) {
+    int a, b;
+    cin>>op>>a>>b;
+    if(op == 1) {
+      seg.update(1,1,n,a,b);
+    } else {
+      cout<<seg.query(1,1,n,a,b).v<<'\n';
+    }
+  }
+ 
+  return 0;
+}
