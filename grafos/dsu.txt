@@ -1,0 +1,40 @@
+/// DSU
+/// O(log N)
+/// Lines: 34
+/// Source: My code
+
+struct DSU {
+  int n;
+  vector<int> p, rnk;
+
+  DSU(int n_) : n(n_) {
+    p.resize(n + 5, 0);
+    iota(p.begin(), p.end(), 0);
+    rnk.resize(n + 5, 1);
+  }
+
+  int id(int u) {
+    return (p[u] == u ? u : p[u] = id(p[u]));
+  }
+
+  vector<pair<int, int>> ans;
+
+  bool join(int u, int v) {
+    int a_u = u, a_v = v;
+    u = id(u); v = id(v);
+    if (u == v) return false;
+    if (rnk[u] > rnk[v]) {
+      p[v] = u;
+      rnk[u] += rnk[v];
+    } else{
+      p[u] = v;
+      rnk[v] += rnk[u];
+    }
+    ans.push_back({a_u, a_v});
+    return true;
+  }
+
+  bool same(int u, int v) {
+    return id(u) == id(v);
+  }
+};

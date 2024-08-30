@@ -1,25 +1,35 @@
-//O(V^2+E)
-int n, m;//n=|V|, m=|E|
-vector<vector<pair<int,int>>> list_adj;
-vector<bool> vis;
+/// Dijkstra
+/// O(E log V) se não tiverem pesos negativos
+/// Lines: 27
+/// Tested: My template
 
-vector<int> dijkstra(int s)
-{
-    vector<int> dist(n, INF);//0-based indexing
-    priority_queue<pair<int,int>> pq;
-    dist[s] = 0; //s é o vértice de ínicio
-    pq.push({0,s});
-    while(!pq.empty()){
-        int x = pq.top().second;
-        pq.pop();
-        if(vis[x]) continue;
-        vis[x] = 1;
-        for(auto y : list_adj[x]){
-            if(dist[y.second] > dist[x]+y.first){
-                dist[y.second] = dist[x]+y.first;
-                pq.push({-dist[y.second],y.second});
-            }
-        }
+using ii = pair<ll, ll>;
+const ll INF = ...;
+
+int n, m;
+vector<ii> ns[MAX];
+ll dist[MAX];
+
+int djk(int s, int t = n) {
+  for(int i = 0; i <= n; ++i) {
+    dist[i] = INF;
+  }
+  priority_queue<ii, vector<ii>, greater<ii>> pq;
+  dist[s] = 0;
+  pq.emplace(dist[s], s);
+
+  while(!pq.empty()) {
+    ll d = pq.top().first, u = pq.top().second;
+    pq.pop();
+    if(d > dist[u]) continue;
+    if(u == t) return dist[t];
+
+    for(auto [v, w] : ns[u]) {
+      if(dist[u] + w < dist[v]) {
+        dist[v] = dist[u] + w;
+        pq.emplace(dist[v], v);
+      }
     }
-    return dist;
+  }
+  return dist[t];
 }

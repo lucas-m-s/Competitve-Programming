@@ -1,0 +1,22 @@
+* Kn+1 -$>$ to ensure that at least one pigeon hole contains (K+1)
+
+* q1 + q2 + . . . + qn - n + 1 -$>$ to ensure that at least one pigeon hole have at least qi
+
+\begin{description}
+    \item[Example 1:] If (Kn+1) pigeons are kept in n pigeon holes where K is a positive integer, what is the average no. of pigeons per pigeon hole?
+    \item[Solution:] Average number of pigeons per hole = (Kn+1)/n = K + 1/n. Therefore there will be at least one pigeonhole which will contain at least (K+1) pigeons, i.e., ceil[K +1/n] and remaining will contain at most K i.e., floor[k+1/n] pigeons. *** The minimum number of pigeons required to ensure that at least one pigeon hole contains (K+1) pigeons is (Kn+1). ***
+
+    \item[Example 2:] A bag contains 10 red marbles, 10 white marbles, and 10 blue marbles. What is the minimum no. of marbles you have to choose randomly from the bag to ensure that we get 4 marbles of same color?
+    \item[Solution:] Apply pigeonhole principle. No. of colors (pigeonholes) n = 3 No. of marbles (pigeons) K+1 = 4 Therefore the minimum no. of marbles required = Kn+1 By simplifying we get Kn+1 = 10. Verification: ceil[Average] is [Kn+1/n] = 4 [Kn+1/3] = 4 Kn+1 = 10 i.e., 3 red + 3 white + 3 blue + 1(red or white or blue) = 10
+\end{description}
+
+\subsubsection*{Pigeonhole Principle Strong Form Theorem}
+
+*** q1 + q2 + . . . + qn - n + 1 ***
+
+Let q1, q2, . . . , qn be positive integers. If *** q1 + q2 + . . . + qn - n + 1 *** objects are put into n boxes, then either the 1st box contains at least q1 objects, or the 2nd box contains at least q2 objects, . . ., the nth box contains at least qn objects. Application of this theorem is more important, so let us see how we apply this theorem in problem solving.
+
+\begin{description}
+    \item[Example 1:] In a computer science department, a student club can be formed with either 10 members from first year or 8 members from second year or 6 from third year or 4 from final year. What is the minimum no. of students we have to choose randomly from department to ensure that a student club is formed?
+    \item[Solution:] We can directly apply from the above formula where, q1 =10, q2 =8, q3 =6, q4 =4 and n = 4. Therefore the minimum number of students required to ensure department club to be formed is 10 + 8 + 6 + 4 - 4 + 1 = 25
+\end{description}

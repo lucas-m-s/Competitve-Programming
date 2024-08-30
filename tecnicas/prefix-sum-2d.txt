@@ -1,0 +1,65 @@
+/// PSA 2D
+/// Build: O(N*M)
+/// Query: O(1)
+/// Lines: 38
+
+// psa[i][j] -> Representa a soma dos valores
+// de todos os valores tal que i'<=i && j'<=j
+
+// pra pegar intervalo i, j -> I, J ; fazemos:
+// inclui intervalo I, J ;
+// exclui intervalo i-1, J ;
+// exclui intervalo I, j-1 ;
+// nisso excluimos intervalo i-1, j-1 2 vezes
+// então inclui intervalo i-1, j-1
+
+// para array de diferença (acho que é possivel):
+// psa[i][j]++, psa[I][J]-- e fazemos repoe[I][J]++
+// caso vc queira incluir o I, J tambem, sendo assim
+// se o meu intervalo é i', j' -> I', J', então fazemos:
+// query(i', j', I', J') + repoe[I'][J']
+// CONFERIR LÓGICA ACIMA, NÃO TESTADA!
+
+#include <bits/stdc++.h>
+#define int long long
+using namespace std;
+
+signed main() {
+  cin.tie(nullptr)->sync_with_stdio(0);
+
+  int n, m; cin>>n>>m;
+  int ns[n][m];
+  for(int i = 0; i < n; ++i) {
+    for(int j = 0; j < m; ++j) {
+      cin>>ns[i][j];
+    }
+  }
+  int psa[n][m];
+  memcpy(psa, ns, sizeof(psa));
+  for(int i = 0; i < n; ++i) {
+    for(int j = 1; j < m; ++j) {
+      psa[i][j] += psa[i][j-1];
+    }
+  }
+  for(int j = 0; j < m; ++j) {
+    for(int i = 1; i < n; ++i) {
+      psa[i][j] += psa[i-1][j];
+    }
+  }
+  for(int i = 0; i < n; ++i) {
+    for(int j = 0; j < m; ++j) {
+      cout<<psa[i][j]<<" \n"[j==m-1];
+    }
+  }
+  int q; cin>>q;
+  for(int z = 0; z < q; ++z) {
+    int i1, j1, i2, j2; cin>>i1>>j1>>i2>>j2;
+    const int I = max(i1, i2), J = max(j1, j2);
+    const int i_ = min(i1, i2), j_ = min(j1, j2);
+    int ans = psa[I][J];
+    if(j_-1 >= 0) ans -= psa[I][j_-1];
+    if(i_-1 >= 0) ans -= psa[i_-1][J];
+    if(i_-1 >= 0 && j_-1 >= 0) ans += psa[i_-1][j_-1];
+    cout<<ans<<'\n';
+  }
+}

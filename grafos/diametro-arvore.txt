@@ -1,0 +1,39 @@
+/// Diâmetro de uma árvore
+/// Cheque se eh uma árvore :P
+/// O(N + M)
+/// Se ficar tight tente não usar vector no vis ou só tente usar a solução com ordenação topológica
+/// Lines: 31
+/// Testado: https://c...content-available-to-author-only...s.fi/problemset/task/1131/
+
+int n, m, ma = 0, x;
+vector<int> vis;
+vector<vector<int>> adj;
+
+void dfs(int u, int soma = 0) {
+  vis[u] = 1;
+
+  if(soma > ma) x = u, ma = soma;
+
+  for(int v : adj[u]) {
+    if(!vis[v]) {
+      dfs(v, soma + 1);
+    }
+  }
+}
+
+int u, v;
+int main() {
+  /*
+  cin>>n;
+  vis = vector<int>(n+3, 0), adj = vector<vector<int>>(n+3);
+  f(i,0,n-1) {
+    cin>>u>>v;
+    adj[u].eb(v), adj[v].eb(u);
+  }
+  */
+  dfs(1); // ou qualquer outro vértice
+  int xx = x;
+  ma = 0, vis = vector<int>(n+3, 0);
+  dfs(x);
+  cout<<ma<<'\n';
+}

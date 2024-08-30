@@ -1,0 +1,21 @@
+/// Menor valor maior igual a K
+/// O(log N)
+/// pode não precisar do while, mas funciona assim então é isso xD
+
+// se tiverem valores iguais a k, retornará o de menor indice
+// se precisar trocar por f(x) TROQUE x[p-a] por f(p-a), deve funcionar, mas não esqueça de checar os bounds [0, n-1]
+int search_greater(int x[], int n, int k) {
+    int p = n-1; // start
+    for (int a = n; a >= 1; a /= 2) {
+        while (p-a >= 0 && x[p-a] >= k) p -= a;
+    }
+    return p;
+}
+
+const auto search_greater = [&](int x[], int n, int k) -> int {
+    int p = n-1; // start
+    for (int a = n; a >= 1; a /= 2) {
+        while (p-a >= 0 && x[p-a] >= k) p -= a;
+    }
+    return p;
+};

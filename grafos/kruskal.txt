@@ -1,41 +1,33 @@
-//O(E*log(V))
-struct edge {
-    int u, v, peso;
-    bool operator<(edge const& e) {
-        return peso < e.peso;
+/// Kruskal
+/// Gera e retorna o custo total da MST a partir do array de arestas do grafo
+/// O(M log M + M * dsu.join)
+/// Lines: 22 + LINES_DSU
+
+/** DSU
+ * .....
+ * */
+
+struct M {
+	int u, v, w;
+} ms[MAX];
+
+int kruskal(int N) {
+  sort(ms, ms+m, [](M a, M b) {
+	return a.w < b.w;
+  });
+
+  DSU D(N + 3);
+  int ans = 0;
+  /// OTIMIZAÇÃO: add cnt=0 no for
+  /// faça cnt += 2 quando fizer o join
+  /// se cnt >= n finalize o for, pois só sobraram back-edges
+  for(int i = 0; i < m; ++i) {
+    const int u = id(ns[i].u), v = id(ns[i].v);
+    if(u != v) {
+      join(u, v);
+      ans += ns[i].w;
     }
-};
-int n, m;//n=|V|, m=|E|
-vector<edge> arestas;
-vector<int> pai, size;
+  }
 
-int find(int x)
-{
-    while(x != pai[x]) x = pai[x];
-    return x;
-}
-
-void uniao(int x, int y)
-{
-    int px = find(x);
-    int py = find(y);
-    if(size[px] < size[py]) swap(px,py);
-    pai[py] = px;
-    size[px] += size[py];
-}
-
-vector<edge> kruskal()
-{
-    iota(pai.begin(), pai.end(), 0);//0-based indexing
-    sort(arestas.begin(), arestas.end());
-    vector<edge> mst;
-
-    for(int i = 0; i < m; i++){
-        if(find(arestas[i].u) != find(arestas[i].v)){
-            uniao(arestas[i].u, arestas[i].v);
-            mst.push_back(arestas[i]);
-        }
-    }
-
-    return mst;
+  return ans;
 }

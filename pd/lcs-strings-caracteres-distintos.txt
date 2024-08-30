@@ -1,0 +1,43 @@
+/// LCS para strings com caracteres distintos
+/// O(N log N)
+/// Lines: 38
+
+int n;
+int a[MAX], b[MAX];
+unordered_map<int, int> mp;
+vector<int> tempArr, tail;
+ 
+int LCS() {
+  mp.clear();
+  for (int i = 0; i < n; i++) {
+    mp[a[i]] = i + 1;
+  }
+ 
+  tempArr.clear();
+ 
+  for (int i = 0; i < n; i++) {
+    if (mp.find(b[i]) != mp.end()) {
+      tempArr.push_back(mp[b[i]]);
+    }
+  }
+ 
+  tail.clear();
+ 
+  if(s(tempArr) == 0) {
+    return 0;
+  }
+ 
+  tail.push_back(tempArr[0]);
+ 
+  for (int i = 1; i < (int)tempArr.size(); i++) {
+    if (tempArr[i] > tail.back())
+      tail.push_back(tempArr[i]);
+    else if (tempArr[i] < tail[0])
+      tail[0] = tempArr[i];
+    else {
+      auto it = lower_bound(tail.begin(), tail.end(), tempArr[i]);
+      if(it != tail.end()) *it = tempArr[i];
+    }
+  }
+  return (int)tail.size();
+}

@@ -1,0 +1,31 @@
+/// Calcular todos os divisores a partir dos fatores primos
+/// O(Número de divisores de N)
+/// Se N <= 10^8, existem N's que tem sqrt(N) divisores, tenha isso em mente
+/// Sendo assim, isso pode não ser tão rápido se os limites forem muito altos
+/// Lines: 17
+
+///// gerarDivisores(0, 1, fatores, divisores) para utilizar
+// fatores é um vector de pair onde o primeiro valor de cada pair é o fator primo e o segundo valor a potência do mesmo
+
+// Observações
+// * O número de divisores de N é dado por (e1 + 1) * (e2 + 1) * ... * (ek + 1), onde ei são as potências dos fatores primos
+// * Isso significa que o número de divisores cresce rapidamente com o número de fatores primos e suas potências.
+
+void gerarDivisores(int idx, long long atual, const vector<pair<int, int>>& fatores, vector<long long>& divisores) {
+    // Se passou por todos os fatores primos, adiciona o divisor atual
+    if (idx == fatores.size()) {
+        divisores.push_back(atual);
+        return;
+    }
+
+    // Fator atual e sua potência
+    long long primo = fatores[idx].first;
+    int expoenteMax = fatores[idx].second;
+
+    // Tente todas as potências de 0 até expoenteMax para o fator atual
+    long long p = 1;
+    for (int i = 0; i <= expoenteMax; ++i) {
+        gerarDivisores(idx + 1, atual * p, fatores, divisores);
+        p *= primo;
+    }
+}

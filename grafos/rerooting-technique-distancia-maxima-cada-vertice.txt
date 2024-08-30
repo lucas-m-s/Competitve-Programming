@@ -1,0 +1,50 @@
+/// Rerooting technique distancia maxima pra cada vertice
+/// O(N + M)
+/// Lines: 38
+/// Tested: https://c...content-available-to-author-only...s.fi/problemset/task/1132/
+
+#include <bits/stdc++.h>
+using namespace std;
+
+const int MAX = 2e5+5;
+ 
+int n, mad, mav;
+vector<vector<int>> ns(MAX);
+ 
+void dfs(int u, int pai, int d) {
+  if(d > mad) {
+    mad = d;
+    mav = u;
+  }
+  for(int v : ns[u]) {
+    if(v != pai) dfs(v, u, d+1);
+  }
+}
+ 
+vector<int> dist(MAX);
+
+void dfs1(int u, int pai, int d) {
+  dist[u] = max(dist[u], d);
+  for(int v : ns[u]) {
+    if(v != pai) dfs1(v, u, d+1);
+  }
+}
+
+signed main() {
+  cin.tie(nullptr)->sync_with_stdio(0);
+
+  cin>>n;
+  for(int i = 0; i < n-1; ++i) {
+    int u, v; cin>>u>>v;
+    ns[u].push_back(v);
+    ns[v].push_back(u);
+  }
+  dfs(1, 1, 0);
+  const int mav_ = mav;
+  mad = 0, dfs(mav, mav, 0);
+  dfs1(mav_, mav_, 0);
+  dfs1(mav, mav, 0);
+  for(int u = 1; u <= n; ++u) {
+    cout<<dist[u]<<" \n"[u==n];
+  }
+}

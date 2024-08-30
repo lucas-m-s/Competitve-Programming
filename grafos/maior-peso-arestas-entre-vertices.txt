@@ -1,0 +1,121 @@
+/// Maior peso das arestas entre vértices
+/// LCA + MST
+/// O(N log N) amortizado
+/// Lines: 104
+
+#include <bits/stdc++.h>
+using namespace std;
+
+const int MAX = 2e4+5, INF = 1<<30;
+int n, l;
+vector<pair<int, pair<int, int>>> adj1;
+vector<vector<pair<int, int>>> adj;
+vector<bool> vis(MAX, true);
+int timer;
+vector<int> tin, tout;
+vector<vector<int>> up, me;
+
+void dfs(int u, int p, int w) {
+  tin[u] = ++timer;
+  up[u][0] = p;
+  me[u][0] = w;
+  for (int i = 1; i <= l; ++i) {
+    const int v = up[u][i - 1];
+    up[u][i] = up[v][i - 1];
+    me[u][i] = min(me[u][i - 1], me[v][i - 1]);
+  }
+
+  for (auto [v, w_] : adj[u]) {
+    if (v != p)
+      dfs(v, u, w_);
+  }
+
+  tout[u] = ++timer;
+}
+
+bool is_ancestor(int u, int v) {
+  return tin[u] <= tin[v] && tout[u] >= tout[v];
+}
+
+int lca(int u, int v) {
+  // se u ja for ancestral de v, entao nao temos mais caminho para pegar o menor peso
+  // e se fizermos p[u][0], pegaremos o peso do caminho que leva até u, o que estaria errado
+  if(is_ancestor(u, v)) {
+    return INF;
+  }
+  int ans = INF;
+  // u quando terminar o for, representará o maior ancestral de u original que tem tempo maior que v
+  // deste modo, não consideramos o peso do LCA, o que é certo, já que o peso do LCA, representaria um caminho
+  // que não faz parte do manor caminho entre u e v
+  for (int i = l; i >= 0; --i) {
+    if (!is_ancestor(up[u][i], v)) {
+      ans = min(ans, me[u][i]);
+      u = up[u][i];
+    }
+  }
+  /// consideramos o me[u'][0] já que não consideramos seu peso no for
+  /// já que u' é o maior ancestral que respeita as restrições,
+  /// então para considerar o peso dele, basta usar me[u'][0], que consideramos
+  /// o peso da aresta de LCA para u'
+  return min(ans, me[u][0]);
+}
+
+void preprocess(int root) {
+  tin = vector<int>(MAX);
+  tout = vector<int>(MAX);
+  timer = 0;
+  l = ceil(log2(MAX));
+  up.assign(MAX, vector<int>(l + 1));
+  me.assign(MAX, vector<int>(l + 1, INF));
+  dfs(root, root, INF);
+}
+
+struct DSU {
+  vector<int> e;
+  DSU(int N) : e(N, -1) {}
+  int id(int x) { return e[x] < 0 ? x : e[x] = id(e[x]); }
+  bool connected(int a, int b) { return id(a) == id(b); }
+  int size(int x) { return -e[id(x)]; }
+  bool join(int x, int y) {
+    x = id(x), y = id(y);
+    if (x == y) return false;
+    if (e[x] > e[y]) swap(x, y);
+    e[x] += e[y];
+    e[y] = x;
+    return true;
+  }
+};
+
+void kruskal(int N, vector<pair<int, pair<int, int>>> edges) {
+  sort(edges.rbegin(), edges.rend());
+  DSU D(N + 1);
+  for (pair<int, pair<int, int>> &e : edges) {
+    if (D.join(e.second.first, e.second.second)) {
+      adj[e.second.first].push_back({e.second.second, e.first});
+      adj[e.second.second].push_back({e.second.first, e.first});
+    }
+  }
+}
+
+signed main() {
+  cin.tie(nullptr)->sync_with_stdio(0);
+
+  int m, s, a, b, w, r, h;
+  while (cin >> n >> m >> s) {
+    adj1.clear(), adj.clear();
+    for (int i = 0; i < m; i++) {
+      cin >> a >> b >> w;
+      adj1.push_back({w, {a, b}});
+      adj1.push_back({w, {b, a}});
+    }
+    adj.assign(n+1, vector<pair<int, int>>());
+    kruskal(n, adj1);
+
+    preprocess(1);
+
+    for (int i = 0; i < s; i++) {
+      cin >> r >> h;
+      cout << min(lca(r, h), lca(h, r)) << '\n';
+    }
+  }
+}

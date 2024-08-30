@@ -1,0 +1,103 @@
+/// PSA 3D
+/// Build: O(L*R*C)
+/// Query: O(1)
+/// Lines: 74
+
+int n, ns[MAX][MAX][MAX], psa[MAX][MAX][MAX];
+
+// Calculating prefix sum array
+void prefixSum3d() {
+  int L = n, R = n, C = n;
+	psa[0][0][0] = ns[0][0][0];
+
+	for (int i = 1; i < L; i++)
+		psa[i][0][0] = psa[i - 1][0][0] + ns[i][0][0];
+
+	for (int i = 1; i < R; i++)
+		psa[0][i][0] = psa[0][i - 1][0] + ns[0][i][0];
+
+	for (int i = 1; i < C; i++)
+		psa[0][0][i] = psa[0][0][i - 1] + ns[0][0][i];
+
+	for (int k = 1; k < L; k++) {
+		for (int i = 1; i < R; i++) {
+			psa[k][i][0] = ns[k][i][0]
+						+ psa[k - 1][i][0]
+						+ psa[k][i - 1][0]
+						- psa[k - 1][i - 1][0];
+		}
+	}
+	for (int i = 1; i < R; i++) {
+		for (int j = 1; j < C; j++) {
+			psa[0][i][j] = ns[0][i][j]
+						+ psa[0][i - 1][j]
+						+ psa[0][i][j - 1]
+						- psa[0][i - 1][j - 1];
+		}
+	}
+	for (int j = 1; j < C; j++) {
+		for (int k = 1; k < L; k++) {
+			psa[k][0][j] = ns[k][0][j]
+						+ psa[k - 1][0][j]
+						+ psa[k][0][j - 1]
+						- psa[k - 1][0][j - 1];
+		}
+	}
+
+	for (int k = 1; k < L; k++) {
+		for (int i = 1; i < R; i++) {
+			for (int j = 1; j < C; j++) {
+				psa[k][i][j] = ns[k][i][j]
+
+							+ psa[k - 1][i][j]
+							+ psa[k][i - 1][j]
+							+ psa[k][i][j - 1]
+
+							- psa[k - 1][i - 1][j]
+							- psa[k][i - 1][j - 1]
+							- psa[k - 1][i][j - 1]
+
+							+ psa[k - 1][i - 1][j - 1];
+			}
+		}
+	}
+}
+
+int querySum(int x1, int y1, int z1, int x2, int y2, int z2) {
+  int result = psa[x2][y2][z2];
+  
+  if (x1 > 0) result -= psa[x1-1][y2][z2];
+  if (y1 > 0) result -= psa[x2][y1-1][z2];
+  if (z1 > 0) result -= psa[x2][y2][z1-1];
+  
+  if (x1 > 0 && y1 > 0) result += psa[x1-1][y1-1][z2];
+  if (x1 > 0 && z1 > 0) result += psa[x1-1][y2][z1-1];
+  if (y1 > 0 && z1 > 0) result += psa[x2][y1-1][z1-1];
+  
+  if (x1 > 0 && y1 > 0 && z1 > 0) result -= psa[x1-1][y1-1][z1-1];
+  
+  return result;
+}
+
+int main() {
+  memset(psa, 0, sizeof(psa));
+
+  /*
+  cin>>n;
+  f(i,0,n) {
+    f(j,0,n) {
+      f(z,0,n) {
+        cin>>ns[i][j][z];
+      }
+    }
+  }
+  */
+
+  prefixSum3d();
+  int q; cin>>q;
+  while(q--) {
+    int x1, x2, y1, y2, z1, z2; cin>>x1>>x2>>y1>>y2>>z1>>z2;
+    --x1, --x2, --y1, --y2, --z1, --z2;
+    cout<<querySum(x1, y1, z1, x2, y2, z2)<<'\n';
+  }
+}

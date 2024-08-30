@@ -1,0 +1,54 @@
+/// String Mediana de duas strings
+/// Soma de dois numeros na base B
+/// Divisão de um número na base B por 2
+/// O(N)
+/// Lines: 47
+
+#include <bits/stdc++.h>
+#define int long long
+using namespace std;
+
+signed main() {
+  cin.tie(nullptr)->sync_with_stdio(0);
+
+  // a soma tera num. digitos <= k+1
+  // a div tera num. digitos = k pois terei 2k / k
+
+  int n; cin>>n;
+  string s; cin>>s;
+  string t; cin>>t;
+  
+  // 0 -> primeiro digito
+  // s(p)-1 -> ultimo digito
+  const auto b26 = [](string p) -> vector<int> {
+    vector<int> v;
+    for(char l : p) v.emplace_back(l - 'a');
+    reverse(v.begin(), v.end());
+    return v;
+  };
+  const auto sum = [](vector<int> &a, vector<int> b) -> void {
+    const int sz = max(a.size(), b.size()) + 1;
+    while(a.size() <= sz) a.emplace_back(0);
+
+    for(int i = 0; i < sz; ++i) {
+      if(i < b.size()) a[i] += b[i];
+      a[i+1] += a[i] / 26;
+      a[i] %= 26;
+    }
+  };
+  const auto div = [](vector<int>& a) -> void {
+    for(int i = a.size()-1; i >= 0; --i) {
+      if(a[i] % 2) {
+        a[i-1] += 26;
+      }
+      a[i] /= 2;
+    }
+  };
+
+  auto a = b26(s), b = b26(t);
+  sum(a, b);
+  div(a);
+  assert(a.size() >= n);
+  for(int i = n-1; i >= 0; --i) cout<<char(a[i] + 'a');
+  cout<<'\n';
+}

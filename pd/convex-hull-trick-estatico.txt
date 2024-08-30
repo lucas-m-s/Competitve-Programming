@@ -1,0 +1,57 @@
+/// Convex Hull Trick Estatico
+/// add O(1) amortizado, query O(1) amortizado
+
+// adds tem que serem feitos em ordem de slope
+// queries tem que ser feitas em ordem de x;
+
+/// É somente uma ferramenta de otimização da DP.
+/// É quase como uma BIT, então na maioria dos casos
+/// VC VAI COMEÇAR COM UMA DP LENTA,
+/// TENHA UMA DP PRONTA E SO USE ISSO SE A DP...
+/// PRECISAR DE UMA OTIMIZAÇÃO.
+
+/// Pega maximo, pra pegar o minimo soh precisa trocar
+/// de `if (eval(it+1, x) > eval(it, x))` pra
+/// `if (eval(it+1, x) < eval(it, x))`
+
+/// Cheque se (x, y >= 0), e verifique se funciona da..
+/// maneira esperada
+
+/// CUIDADO COM O OVERFLOW ATÉ MESMO DOS LONG LONG
+struct CHT {
+	int it;
+	vector<ll> a, b;
+	CHT():it(0){}
+
+	ll eval(int i, ll x){
+		return a[i]*x + b[i];
+	}
+  
+	bool useless(){
+		int sz = a.size();
+		int r = sz-1, m = sz-2, l = sz-3;
+    
+#warning cuidado com overflow!
+		return (b[l] - b[r])*(a[m] - a[l]) <
+			(b[l] - b[m])*(a[r] - a[l]);
+	}
+  
+	void add(ll A, ll B){
+		a.push_back(A); b.push_back(B);
+		while (!a.empty()){
+			if ((a.size() < 3) || !useless()) break;
+			a.erase(a.end() - 2);
+			b.erase(b.end() - 2);
+		}
+		it = min(it, (int)(a.size()) - 1);
+	}
+
+	ll query(ll x){
+		while (it+1 < a.size()){
+    		/// se for minimo é so trocar de '>' pra '<' aqui
+			if (eval(it+1, x) > eval(it, x)) it++;
+			else break;
+		}
+		return eval(it, x);
+	}
+};

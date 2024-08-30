@@ -1,0 +1,58 @@
+/// Dijkstra com 2 estados EXEMPLO
+/// ACHO QUE É O(E log (V * K)), sendo K o segundo estado
+/// LEMBRANDO: que essa complexidade é pra quando os pesos não são negativos
+/// Lines: +/- 35
+/// Tested: https://cses.fi/problemset/task/1195/
+ 
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+using ii = pair<ll, ll>;
+using iii = tuple<ll, int, ll>;
+ 
+const int MAX = 1e5+5;
+const ll INF = 1LL<<60;
+int n;
+ 
+vector<vector<ii>> ns(MAX);
+ll dist[MAX][2];
+ 
+long long djk(int s, int T = n) {
+	for(int i = 0; i <= n+2; ++i) {
+		dist[i][0] = INF, dist[i][1] = INF;
+	}
+  priority_queue<iii, vector<iii>, greater<iii>> pq;
+  dist[s][0] = 0;
+  pq.emplace(dist[s][0], s, 0);
+ 
+  while(!pq.empty()) {
+    auto [d, u, t] = pq.top(); pq.pop();
+    if(d > dist[u][t]) continue;
+ 
+    for(auto [v, w] : ns[u]) {
+      if(dist[u][t] + w < dist[v][t]) {
+        dist[v][t] = dist[u][t] + w;
+        pq.emplace(dist[v][t], v, t);
+      }
+      if(t == 0) {
+        w /= 2;
+        if(dist[u][0] + w < dist[v][1]) {
+          dist[v][1] = dist[u][0] + w;
+          pq.emplace(dist[v][1], v, 1);
+        }
+      }
+    }
+  }
+  return dist[T][1];
+}
+ 
+signed main() {
+  cin.tie(nullptr)->sync_with_stdio(0);
+ 
+  int m; cin>>n>>m;
+  for(int i = 0; i < m; ++i) {
+    int u, v, w; cin>>u>>v>>w;
+    ns[u].emplace_back(v, w);
+  }
+  cout<<djk(1)<<'\n';
+}

@@ -1,0 +1,59 @@
+/// Rerooting technique
+/// Pra cada veritce - soma das distancias para todos os vertices
+/// O(N + M)
+/// Lines: 47
+/// Tested: https://c...content-available-to-author-only...s.fi/problemset/task/1133/
+
+#include <bits/stdc++.h>
+using namespace std;
+const int MAX = 2e5+5;
+using ll = long long;
+
+vector<ll> dp(MAX), somat(MAX);
+vector<int> cs(MAX);
+vector<vector<int>> ns(MAX);
+ll ans;
+ 
+void dfsp(int u, int p) {
+  dp[u] = 0;
+  somat[u] = 0;
+  for(int v : ns[u]) {
+    if(v == p) continue;
+    dfsp(v, u);
+    dp[u] += dp[v] + somat[v] + 1;
+    somat[u] += somat[v] + 1;
+  }
+}
+ 
+void dfs(int u, int p) {
+  ans = max(ans, dp[u]);
+  for(int v : ns[u]) {
+    if(v == p) continue;
+    const ll dpuwv = dp[u] - (dp[v] + somat[v]) - 1;
+    const ll somatuwv = somat[u] - somat[v] - 1;
+    dp[v] += dpuwv + somatuwv + 1;
+    somat[v] += somatuwv + 1;
+    dfs(v, u);
+  }
+}
+ 
+signed main() {
+  cin.tie(nullptr)->sync_with_stdio(0);
+
+  int n;
+  cin>>n;
+  ns.assign(n+5, vector<int>());
+  dp.assign(n+5, 0);
+  somat.assign(n+5, 0);
+  ans = 0;
+  for(int i = 0; i < n-1; ++i) {
+    int u, v; cin>>u>>v;
+    ns[u].push_back(v);
+    ns[v].push_back(u);
+  }
+  dfsp(1, 1);
+  dfs(1, 1);
+  for(int u = 1 ; u <= n; ++u) {
+    cout<<dp[u]<<" \n"[u==n];
+  }
+}
