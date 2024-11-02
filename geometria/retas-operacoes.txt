@@ -1,0 +1,44 @@
+//Requer as operações com pontos e vetores
+typedef double T;
+
+struct line {
+  //reta: ax + by = c
+  //v = (b, -a), paralelo à reta
+  pt v; T c;
+  
+  line(pt v, T c) : v(v), c(c) {}
+  
+  line(T a, T b, T c) : v({b,-a}), c(c) {}
+  //reta que passa pelos pontos P e Q
+  line(pt p, pt q) : v(q-p), c(cross(v,p)) {}
+  //P acima da reta, side > 0; abaixo, side < 0; na reta, side = 0
+  T side(pt p) {return cross(v,p)-c;}
+  //distância do ponto P até a reta
+  double dist(pt p) {return abs(side(p)) / v.norm();}
+};
+
+//linha perpendicular a l e passa por P
+line perpThrough(line l, pt p) {return {p, p + perp(l.v)};}
+//transladar a reta l pelo vetor t
+line translate(line l, pt t) {return {l.v, l.c + cross(l.v,t)};}
+//deslocar l perpendicularmente por uma distância
+line shiftLeft(line l, double dist) {return {l.v, l.c + dist*l.v.norm()};}
+//ponto de interseção entre l1 e l2
+bool inter(line l1, line l2, pt &out) {
+  T d = cross(l1.v, l2.v);
+  if (d == 0) return false; //não tem interseção
+  out = (l2.v*l1.c - l1.v*l2.c) / d; //requer coordenadas floating-point
+  return true;
+}
+//projeção ortogonal do ponto P em l
+pt proj(line l, pt p) {
+  return p - perp(l.v)*l.side(p)/(l.v.x*l.v.x + l.v.y*l.v.y);
+}
+//reflexão do ponto P em torno de l
+pt refl(line l, pt p) {
+  return p - perp(l.v)*2*l.side(p)/((l.v.x*l.v.x + l.v.y*l.v.y));
+}
+//função de comparação p/ ordenar pontos ao longo de l
+bool cmpProj(line l, pt p, pt q) {
+  return dot(l.v,p) < dot(l.v,q);
+}

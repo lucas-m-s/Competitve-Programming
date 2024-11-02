@@ -1,0 +1,33 @@
+typedef double T;
+
+struct pt {
+  T x, y;
+  pt operator+(pt p) {return {x+p.x, y+p.y};}
+  pt operator-(pt p) {return {x-p.x, y-p.y};}
+  pt operator*(T s) {return {x*s, y*s};}
+  pt operator/(T s) {return {x/s, y/s};}
+  //módulo do vetor p
+  double norm() {return sqrt(x*x + y*y);}
+};
+
+//transladar ponto v pelo vetor p
+pt translate(pt v, pt p) {return v+p;}
+//comprimir ou expandir vetor p em torno de c
+pt scale(pt c, T factor, pt p) {return c + (p-c)*factor;}
+//rotacionar vetor pelo ângulo a
+pt rot(pt p, T a) {
+  return {p.x*cos(a) - p.y*sin(a), p.x*sin(a) + p.y*cos(a)};
+}
+//rotacionar vetor em 90 graus
+pt perp(pt p) {return {-p.y, p.x};}
+//produto escalar
+T dot(pt v, pt w) {return v.x*w.x + v.y*w.y;}
+//produto vetorial (magnitude)
+T cross(pt v, pt w) {return v.x*w.y - v.y*w.x;}
+//orientação dos pontos abc
+int orient(pt a, pt b, pt c) {
+  T o = cross(b-a, c-a);
+  if(o > 0) return 1; //abc anti-horário
+  if(o < 0) return -1; //abc horário
+  else return 0; //abc colineares
+}
